@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 
+
 @Model
 class Day {
     
@@ -20,16 +21,23 @@ class Day {
         return formatter.string(from: date)
     }
     
-    var foodsEaten: [Food]
+    var foodsEaten: [Food: Double]
     
     
-    // Sum all the foods eaten and cast the sum (Double) into an Int.
-    var totalCalories: Int {
-        Int(foodsEaten.reduce(0) {$0 + $1.calories})
-    }
+
+    var totalCalories: Double {
+        var total: Double = 0
+        foodsEaten.forEach { food, amount in
+            total += food.calories * amount
+            
+        }
+        return total
+            
+        }
+
     
     
-    init(date: Date, foodsEaten: [Food], weight: Double) {
+    init(date: Date, foodsEaten: [Food: Double], weight: Double) {
         self.date = date
         self.foodsEaten = foodsEaten
         self.weight = weight
@@ -39,11 +47,7 @@ class Day {
     
     static let example = Day(
         date: Date().addingTimeInterval(-1006400),
-      
-        foodsEaten: [
-           
-            
-        ],
+        foodsEaten: [:],
         weight: 0.0
     )
     

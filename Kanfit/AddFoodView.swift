@@ -13,11 +13,21 @@ struct AddFoodView: View {
     @Environment(\.dismiss) var dismiss
     
     @Bindable var day: Day
+    @State private var foodsAdded : [Food: Double] = [:]
     @State private var foodName = ""
     @State private var calories = ""
-    @State private var selectedFood : Food?
     @State private var addExistingFood = false
-    @State private var newFoodEnabled = false
+    @State private var searchText: String = ""
+    @State private var selectedMode: AddFoodMode = .search
+    @State private var showingPopover: Bool = false
+    @State private var isClicked = false
+    
+    
+    // Enum to represent picker modes
+    enum AddFoodMode: String, CaseIterable {
+        case search = "Search"
+        case addNew = "New Foods"
+    }
    
     let existingFoods: [Food] = FileManager.default.decode("foods.json")
     
@@ -25,99 +35,121 @@ struct AddFoodView: View {
         !foodName.isEmpty && Double(calories) != nil
     }
 
-    var canSave: Bool {
-        (newFoodEnabled && isValidNewFood) || (!newFoodEnabled && selectedFood != nil)
-    }
+
     
     
     var body: some View {
         
         NavigationStack {
+            
+          
+            
             Form {
                 
-                Section("Choose what to do") {
-                    Toggle("Add new food", isOn: $newFoodEnabled)
-                        .onChange(of: newFoodEnabled) {
-                            
-                                selectedFood = nil
-                                foodName = ""
-                                calories = ""
+            
+                    Section {
+                        Picker("Choose mode", selection: $selectedMode) {
+                            ForEach(AddFoodMode.allCases, id: \.self) { mode in
+                                Text(mode.rawValue)
+                                    .tag(mode)
                             }
+                           
                         }
-                
-                
-                if newFoodEnabled == true {
-                    Section("Add a new food") {
-                       
-                        
-                      
-                      
-                            
-                            TextField("Enter food name", text: $foodName)
-                            TextField("Enter calories", text: $calories)
-                        
+                        .pickerStyle(.segmented)
+                        .listRowBackground(EmptyView())
                     }
+                
+                
+                if selectedMode == .addNew {
+                                Section("Add a new food") {
+                                    TextField("Enter food name", text: $foodName)
+                                    TextField("Enter calories", text: $calories)
+                                        .keyboardType(.decimalPad)
+                                }
+                            } else if selectedMode == .search {
+                                Section("Add existing food") {
+                                    List {
+                                        ForEach(existingFoods) { food in
+                                            NavigationLink(destination: FoodView(food: food, foodsAdded: $foodsAdded)) {
+                                                
+                                                VStack(alignment: .leading){
+                                                    Text(food.name)
+                                                    Text(food.calories.formatted() + " cal").foregroundStyle(.secondary)
+                                                }
+                                            
+                                                
+                                            }
+                                           
+                                            
+                                        }
+                                       
+                                    }
+                                    
+                                
+                                }
+                            }
+                
+               
+              
                     
                 }
+            
                 
-                else {
-                    
-                    Section("Add existing food") {
+            
+        
+ 
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
                         
-                        Picker("Choose an existing food", selection: $selectedFood) {
+                        showingPopover = true
+                        isClicked.toggle()
+                        
+                    } label : {
+                        Image(systemName: "cart")
                             
-                            Text("None").tag(nil as Food?)
-                            ForEach(existingFoods, id: \.self) { food in
-                                
-                               
-                                Text(food.name)
-                                    .tag(food as Food)
-                                
-                                
-                                
-                                
-                                
-                            }
-                            
-                            
-                            
-                        }
-                        .pickerStyle(.navigationLink)
+                            .font(.title2)
                     }
+                    .symbolEffect(.wiggle, value: isClicked)
+                    .overlay(
+                        ZStack {
+                            Circle()
+                                .stroke(Color.blue, lineWidth: 0.5) //
+                                .frame(width: 15, height: 15)
+                            Text(String(foodsAdded.count)).bold()
+                                
+                                .font(.caption)
+                                
+                        },
+                        alignment: .topTrailing
+                    )
                    
-                  
-                }
-                
-               
-               
-                Section("Save") {
-                    Button("Save") {
-                        
-                        if newFoodEnabled {
-                            let newFood = Food(id: existingFoods.count + 1, name: foodName, calories: Double(calories) ?? 0)
-                            day.foodsEaten.append(newFood)
-                            writeFood(newFood, existingFoods: existingFoods)
-                            dismiss()
-                        }
-                        
-                        else {
-                            
-                            day.foodsEaten.append(selectedFood!)
-                            dismiss()
-                        }
-                       
-                       
-                        
-                    }
-                 
-                } .disabled(canSave == false)
                     
+                    .popover(isPresented: $showingPopover,  content : {
+                        
+                        // Pass the selectedDate as a Binding
+                        FoodsCartView(foodsAdded: $foodsAdded)
+                            
+                            .frame(minWidth:300, maxHeight:400)
+                            .presentationCompactAdaptation(.popover)
+                           
+                           
+                        
+                        
+                    })
                 }
-            
-                
-            
-           
-            .navigationTitle("Add food")
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        
+                        
+                        day.foodsEaten = foodsAdded
+                        dismiss()
+                    }
+                }
+            }
+          
         }
         
         
@@ -138,6 +170,9 @@ struct AddFoodView: View {
             print("Error writing to file: \(error)")
         }
     }
+    
+   
+
   
 
 }

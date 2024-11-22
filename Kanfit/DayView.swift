@@ -37,7 +37,7 @@ struct DayView: View {
       
             
         
-        NavigationStack(){
+        NavigationStack{
                 
                 List {
                     Section(header: Text("Foods eaten")) {
@@ -49,7 +49,7 @@ struct DayView: View {
                          
                             
         
-                            ForEach(day.foodsEaten, id: \.self) { food in
+                        ForEach(Array(day.foodsEaten.keys), id: \.self) { food in
                                 HStack {
                                     Text(food.name)
                                     Spacer()
@@ -58,7 +58,7 @@ struct DayView: View {
                                 }
                                 
                             }
-                            .onDelete(perform: deleteFood)
+                        .onDelete(perform: deleteFood)
                         
                        
                     }
@@ -120,8 +120,11 @@ struct DayView: View {
         }
     
     func deleteFood(at offsets: IndexSet) {
-        day.foodsEaten.remove(atOffsets: offsets)
-    }
+           for index in offsets {
+               let key = Array(day.foodsEaten.keys)[index]
+               day.foodsEaten.removeValue(forKey: key)
+           }
+       }
     
  
     }

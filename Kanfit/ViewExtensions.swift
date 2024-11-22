@@ -16,7 +16,7 @@ extension View {
         self
             .onChange(of: number.wrappedValue) {
                 
-             
+                
                 let cleanedInput = number.wrappedValue
                     .replacingOccurrences(of:  "\\.{2,}", with: ".", options: .regularExpression)
                     .replacingOccurrences(of: "^0|^\\.", with: "", options: .regularExpression)
@@ -24,7 +24,6 @@ extension View {
                 
                 number.wrappedValue = cleanedInput
                 let components = cleanedInput.components(separatedBy: ".")
-                print(components)
                 // No decimal
                 if components.count == 1 {
                     number.wrappedValue = String(number.wrappedValue.prefix(3))
@@ -38,12 +37,10 @@ extension View {
                 }
             }
     }
+}
     
-    func endTextEditing() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
-                                        to: nil, from: nil, for: nil)
-      }
-    }
+    
+ 
 
                     
                     

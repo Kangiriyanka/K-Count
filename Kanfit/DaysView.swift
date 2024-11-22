@@ -16,7 +16,7 @@ struct DaysView: View {
     @State private var showingPopover  = false
     @State private var matchingDay: Day?
     @State private var insertInitial = false
-    @State private var debug = false
+    @State private var debug = true
     private var calendar: Calendar
     
     
@@ -104,8 +104,7 @@ struct DaysView: View {
         
         if !days.contains(where: {$0.date == dateOnly}) {
                             
-            let newDay = Day(date: newDate, foodsEaten: [], weight: 0)
-                            print("Adding a new day: " , newDay.formattedDate)
+            let newDay = Day(date: newDate, foodsEaten: [:], weight: 0)
                             modelContext.insert(newDay)
             matchingDay = newDay
                         }

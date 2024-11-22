@@ -20,6 +20,8 @@ struct Food: Hashable, Codable, Identifiable{
         
     }
     
+    static let example = Food(id: 1, name: "Reese Peanut Butter Cup", calories: 150)
+    
     
     
 }

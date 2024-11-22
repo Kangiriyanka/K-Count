@@ -51,9 +51,9 @@ class Person {
     }
     
     
-    var TDEE: Int {
+    var TDEE: Double {
         
-        return Int(BMR * activityLevel.multiplier)
+        return Double(BMR * activityLevel.multiplier)
     }
     
     init(name: String, age: Int, weight: Double, height: Double, sex: Sex, activityLevel: ActivityLevel) {
