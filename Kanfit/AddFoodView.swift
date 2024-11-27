@@ -16,6 +16,7 @@ struct AddFoodView: View {
     @State private var foodsAdded : [Food: Double] = [:]
     @State private var foodName = ""
     @State private var calories = ""
+    @State private var servingType = ""
     @State private var addExistingFood = false
     @State private var searchText: String = ""
     @State private var selectedMode: AddFoodMode = .search
@@ -29,15 +30,9 @@ struct AddFoodView: View {
         case addNew = "New Foods"
     }
    
-    let existingFoods: [Food] = FileManager.default.decode("foods.json")
+    @State private var existingFoods: [Food] = FileManager.default.decode("foods.json")
     
-    var isValidNewFood: Bool {
-        !foodName.isEmpty && Double(calories) != nil
-    }
 
-
-    
-    
     var body: some View {
         
         NavigationStack {
@@ -61,20 +56,25 @@ struct AddFoodView: View {
                 
                 
                 if selectedMode == .addNew {
-                                Section("Add a new food") {
-                                    TextField("Enter food name", text: $foodName)
-                                    TextField("Enter calories", text: $calories)
-                                        .keyboardType(.decimalPad)
-                                }
-                            } else if selectedMode == .search {
+                                
+                    NewFoodView(existingFoods: $existingFoods, foodsAdded: $foodsAdded)
+                    
+                    } else if selectedMode == .search {
                                 Section("Add existing food") {
                                     List {
-                                        ForEach(existingFoods) { food in
+                                        ForEach(existingFoods, id: \.self  ) { food in
                                             NavigationLink(destination: FoodView(food: food, foodsAdded: $foodsAdded)) {
                                                 
                                                 VStack(alignment: .leading){
                                                     Text(food.name)
-                                                    Text(food.calories.formatted() + " cal").foregroundStyle(.secondary)
+                                                    HStack {
+                                                       ( Text(food.calories.formatted() + " cal")
+                                                        +
+                                                        Text(" / \(food.servingType)")
+                                                       ).foregroundStyle(.secondary)
+                                                    }
+                                                    
+                                                    
                                                 }
                                             
                                                 
@@ -130,7 +130,7 @@ struct AddFoodView: View {
                     .popover(isPresented: $showingPopover,  content : {
                         
                         // Pass the selectedDate as a Binding
-                        FoodsCartView(foodsAdded: $foodsAdded)
+                        FoodsAddedView(foodsAdded: $foodsAdded)
                             
                             .frame(minWidth:300, maxHeight:400)
                             .presentationCompactAdaptation(.popover)
@@ -143,8 +143,12 @@ struct AddFoodView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
                         
+                        // Current: the value of day.foodseaten for the key that exists in both dictionaries
                         
-                        day.foodsEaten = foodsAdded
+                        // New: The new value from foodsAdded for the key that exists in both dictionaries
+                        day.foodsEaten = day.foodsEaten.merging(foodsAdded) {
+                            (current,new) in current + new
+                        }
                         dismiss()
                     }
                 }
@@ -155,21 +159,7 @@ struct AddFoodView: View {
         
     }
     
-    func writeFood(_ food: Food, existingFoods: [Food]) {
-        let url = URL.documentsDirectory.appendingPathComponent("foods.json")
-        // Step 1: Copy existing foods and append the new food
-        var updatedFoods = existingFoods
-        updatedFoods.append(food)
-        
-        // Step 2: Encode and write the updated array back to file
-        do {
-            let updatedData = try JSONEncoder().encode(updatedFoods)
-            try updatedData.write(to: url, options: [.completeFileProtection])
-            print("\(food.name) saved successfully")
-        } catch {
-            print("Error writing to file: \(error)")
-        }
-    }
+
     
    
 

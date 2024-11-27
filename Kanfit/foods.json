@@ -1,52 +1,23 @@
 [
     {
-        "id": 1,
+       
         "name": "Apple",
-        "calories": 95
+        "calories": 95,
+        "servingType": "piece"
     },
+    
     {
-        "id": 2,
-        "name": "Banana",
-        "calories": 105
+        
+        "name": "Chicken breast",
+        "calories": 2,
+        "servingType": "gram"
     },
+    
     {
-        "id": 3,
-        "name": "Chicken Breast",
-        "calories": 165
-    },
-    {
-        "id": 4,
-        "name": "Brown Rice",
-        "calories": 215
-    },
-    {
-        "id": 5,
-        "name": "Broccoli",
-        "calories": 55
-    },
-    {
-        "id": 6,
-        "name": "Salmon",
-        "calories": 206
-    },
-    {
-        "id": 7,
-        "name": "Avocado",
-        "calories": 234
-    },
-    {
-        "id": 8,
-        "name": "Egg",
-        "calories": 78
-    },
-    {
-        "id": 9,
-        "name": "Oatmeal",
-        "calories": 158
-    },
-    {
-        "id": 10,
-        "name": "Almonds",
-        "calories": 170
+        
+        "name": "Steak",
+        "calories": 3,
+        "servingType": "gram"
     }
+  
 ]

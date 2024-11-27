@@ -7,11 +7,12 @@
 
 import Foundation
 
-struct Food: Hashable, Codable, Identifiable{
+struct Food: Hashable, Codable{
     
-    var id : Int
+   
     var name: String
     var calories: Double
+    var servingType: String
     
     func writeFood() {
         
@@ -20,7 +21,8 @@ struct Food: Hashable, Codable, Identifiable{
         
     }
     
-    static let example = Food(id: 1, name: "Reese Peanut Butter Cup", calories: 150)
+    static let example = Food( name: "Reese Peanut Butter Cup", calories: 150, servingType: "piece")
+    static let another_example =  Food(name: "Steak", calories: 3, servingType: "gram")
     
     
     

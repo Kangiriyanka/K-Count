@@ -47,7 +47,7 @@ class Day {
     
     static let example = Day(
         date: Date().addingTimeInterval(-1006400),
-        foodsEaten: [:],
+        foodsEaten: [Food.example: 2],
         weight: 0.0
     )
     

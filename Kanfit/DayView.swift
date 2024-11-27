@@ -30,7 +30,10 @@ struct DayView: View {
     let person: Person
 
     @State private var showingAddScreen = false
+    
+  
 
+    
     
     
     var body: some View {
@@ -50,12 +53,8 @@ struct DayView: View {
                             
         
                         ForEach(Array(day.foodsEaten.keys), id: \.self) { food in
-                                HStack {
-                                    Text(food.name)
-                                    Spacer()
-                                    Text("\(Int(food.calories))")
-                                        .foregroundStyle(.secondary)
-                                }
+                                
+                            FoodRow(food: food, day: day)
                                 
                             }
                         .onDelete(perform: deleteFood)

@@ -8,20 +8,6 @@
 import Foundation
 import SwiftUI
 
-struct AddButton: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding()
-            .background(Color.accentColor)
-            .foregroundColor(.white)
-            
-            .clipShape(Capsule())
-            .scaleEffect(configuration.isPressed ? 1.2 : 1)
-            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
-           
-        
-    }
-}
 
 struct FoodView: View {
     
@@ -35,7 +21,8 @@ struct FoodView: View {
     var body: some View {
         
         VStack(alignment: .leading) {
-            Text(food.name).font(.title)
+            Text(food.name).font(.title).bold()
+            Text("per " + food.servingType)
             Divider()
             
             HStack {
@@ -43,7 +30,6 @@ struct FoodView: View {
                 Spacer()
                 TextField("Servings", text: $servingSize)
                     .keyboardType(.numberPad)
-                    .limitDecimals($servingSize, decimalLimit: 2)
                     .onChange(of: servingSize) {
                         
                         totalCalories = (Double(servingSize) ?? 1) * food.calories
@@ -95,11 +81,10 @@ struct FoodView: View {
 }
                  
                  
-//
-//#Preview {
-//    @Previewable @State var foodsAdded : [Food: Double] = [:]
-//    let food = Food.example
-//    
-//    FoodView(food: food, foodsAdded: $foodsAdded)
-//  
-//}
+
+#Preview {
+    @Previewable @State var foodsAdded : [Food: Double] = [:]
+    let food = Food.example
+    FoodView(food: food, foodsAdded: $foodsAdded)
+  
+}
