@@ -15,7 +15,7 @@ struct CalculationsRow: View {
         HStack {
             Text(rowName).font(.title3).bold()
             Spacer()
-            Text(value).bold()
+            Text((value))
             
         }
         .listRowBackground(Color.gray.opacity(0.05))

@@ -16,8 +16,8 @@ struct PersonView: View {
             VStack(alignment: .leading) {
                 
                 
-                Text("Weight: \(Int(person.weight)) kg")
-                Text("Maintenance calories: \(person.TDEE)")
+                Text("Weight: \(String(format: "%0.1f", person.weight)) kg")
+                Text("Maintenance calories: \(String(format: "%0.f", person.TDEE))")
                 
             }
             

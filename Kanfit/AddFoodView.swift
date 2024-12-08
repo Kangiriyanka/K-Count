@@ -13,7 +13,10 @@ struct AddFoodView: View {
     @Environment(\.dismiss) var dismiss
     
     @Bindable var day: Day
+    @State private var existingFoods: [Food] = FileManager.default.decode("foods.json")
     @State private var foodsAdded : [Food: Double] = [:]
+
+    
     @State private var foodName = ""
     @State private var calories = ""
     @State private var servingType = ""
@@ -24,14 +27,23 @@ struct AddFoodView: View {
     @State private var isClicked = false
     
     
+    
+    
     // Enum to represent picker modes
     enum AddFoodMode: String, CaseIterable {
         case search = "Search"
         case addNew = "New Foods"
     }
-   
-    @State private var existingFoods: [Food] = FileManager.default.decode("foods.json")
     
+    var filteredFoods: [Food] {
+            if searchText.isEmpty {
+                return existingFoods
+            } else {
+                return existingFoods.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            }
+        }
+   
+   
 
     var body: some View {
         
@@ -47,6 +59,7 @@ struct AddFoodView: View {
                             ForEach(AddFoodMode.allCases, id: \.self) { mode in
                                 Text(mode.rawValue)
                                     .tag(mode)
+                                
                             }
                            
                         }
@@ -58,11 +71,18 @@ struct AddFoodView: View {
                 if selectedMode == .addNew {
                                 
                     NewFoodView(existingFoods: $existingFoods, foodsAdded: $foodsAdded)
+                      
+                   
                     
                     } else if selectedMode == .search {
+                        
+                        if existingFoods.isEmpty {
+                            Text("AINT NO FOOD IN HERE")
+                        }
                                 Section("Add existing food") {
+                                    
                                     List {
-                                        ForEach(existingFoods, id: \.self  ) { food in
+                                        ForEach(filteredFoods, id: \.self  ) { food in
                                             NavigationLink(destination: FoodView(food: food, foodsAdded: $foodsAdded)) {
                                                 
                                                 VStack(alignment: .leading){
@@ -73,6 +93,7 @@ struct AddFoodView: View {
                                                         Text(" / \(food.servingType)")
                                                        ).foregroundStyle(.secondary)
                                                     }
+                                                   
                                                     
                                                     
                                                 }
@@ -93,12 +114,15 @@ struct AddFoodView: View {
               
                     
                 }
-            
-                
-            
+          
         
  
             .navigationBarTitleDisplayMode(.inline)
+           
+            .searchable(text: $searchText,  placement: .navigationBarDrawer(displayMode: .always))
+                
+            
+            
             .toolbar {
                 
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -108,7 +132,7 @@ struct AddFoodView: View {
                         isClicked.toggle()
                         
                     } label : {
-                        Image(systemName: "cart")
+                        Image(systemName: "basket")
                             
                             .font(.title2)
                     }
@@ -140,6 +164,14 @@ struct AddFoodView: View {
                         
                     })
                 }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel", role: .cancel) {
+                        
+                     
+                        dismiss()
+                    }.foregroundColor(.red)
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
                         
@@ -152,6 +184,8 @@ struct AddFoodView: View {
                         dismiss()
                     }
                 }
+                
+              
             }
           
         }

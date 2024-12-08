@@ -11,126 +11,117 @@ import SwiftUI
 
 struct DayView: View {
     
-    struct CustomButtonStyle : ButtonStyle {
-        func makeBody(configuration: Configuration) -> some View {
-            configuration.label
-                .padding()
-                .foregroundColor(.white)
-                .background(configuration.isPressed ? Color.blue : Color.red)
-                .cornerRadius(10)
-            
-        }
-    }
     
-    var day: Day
- 
-   
-    
-    // Here I need the person's tdee, thats why its in day view
-    let person: Person
-
     @State private var showingAddScreen = false
     
-  
+    
+    var day: Day
+    var person: Person
 
     
     
-    
+
     var body: some View {
-      
-            
+        
+        
         
         NavigationStack{
-                
-                List {
-                    Section(header: Text("Foods eaten")) {
-                      
+            
+            List {
+                Section(header: Text("Foods eaten")) {
+                    
+                    
+                    if day.foodsEaten.isEmpty {
+                        EmptyFoodRow()
+                    }
+                    
+                    
+                    
+                    ForEach(Array(day.foodsEaten.keys), id: \.self) { food in
                         
-                        if day.foodsEaten.isEmpty {
-                            EmptyFoodRow()
-                        }
-                         
-                            
-        
-                        ForEach(Array(day.foodsEaten.keys), id: \.self) { food in
-                                
+                       
                             FoodRow(food: food, day: day)
-                                
-                            }
-                        .onDelete(perform: deleteFood)
-                        
-                       
+         
                     }
+                    .onDelete(perform: deleteFood)
                     
-                    Section(header: Text("Calculations")) {
-                        CalculationsRow(rowName: "Total Calories:", value: String(day.totalCalories))
-                        
-                       
-                        
-                        CalculationsRow(rowName: "Remaining Calories:", value: String(person.TDEE - day.totalCalories))
-                    }
-                   
-                    Section(header: Text("Weight")) {
-                        HStack {
-                            Text(day.weight == 0.0 ? "Enter your weight" :  "\(day.weight, specifier: "%.1f") kg" )
-                            
-                            
-                            NavigationLink(destination: AddWeightView(day: day, person: person)) {
-                                
-                              
-                             
-                                
-                            }
-                         
-                           
-                        
-                          
-                        }
-                        
-                   
-                                
-                        }
-                        
-                           
-                    
-                  
                     
                 }
-               
-             
-                .navigationTitle(day.formattedDate)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Add Food", systemImage: "fork.knife") {
-                            showingAddScreen = true
+            
+                
+                Section(header: Text("Weight")) {
+                    
+                    
+                    HStack {
+                        Text(day.weight == 0.0 ? "Enter your weight" :  "\(day.weight, specifier: "%.1f") kg" )
+                        
+                        NavigationLink(destination: EditWeightView(day: day, person: person)) {
+                            
+                            
+                            
+                            
                         }
+                        
+                        
+                        
+                        
                     }
                     
                     
-                    ToolbarItem {
-                        EditButton()
+                    
+                }
+                
+                
+                Section(header: Text("Calculations")) {
+                    CalculationsRow(rowName: "Total Calories:", value: String(format: "%0.f", day.totalCalories))
+                    
+                    
+                    if day.weight == 0.0 {
+                        CalculationsRow(rowName: "Remaining Calories:", value: "0")
+                    }
+                    else {
+                    CalculationsRow(rowName: "Remaining Calories:", value: String(format: "%0.f", person.calculateTDEE(using: day.weight) - day.totalCalories))
+                }
+                }
+                
+                
+                
+                
+                
+            }
+            
+            
+            .navigationTitle(day.formattedDate)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Add Food", systemImage: "fork.knife") {
+                        showingAddScreen = true
                     }
                 }
-                .sheet(isPresented: $showingAddScreen) {
-                    AddFoodView(day: day)
+                
+                
+                ToolbarItem {
+                    EditButton()
                 }
             }
+            .sheet(isPresented: $showingAddScreen) {
+                AddFoodView(day: day)
+            }
         }
-    
-    func deleteFood(at offsets: IndexSet) {
-           for index in offsets {
-               let key = Array(day.foodsEaten.keys)[index]
-               day.foodsEaten.removeValue(forKey: key)
-           }
-       }
-    
- 
     }
     
-
-
-#Preview {
+    func getWeight() -> Double {
+        return day.weight
+    }
+    func deleteFood(at offsets: IndexSet) {
+        for index in offsets {
+            let key = Array(day.foodsEaten.keys)[index]
+            day.foodsEaten.removeValue(forKey: key)
+        }
+    }
     
-    DayView( day: .example, person: Person.example)
+    
 }
+
+

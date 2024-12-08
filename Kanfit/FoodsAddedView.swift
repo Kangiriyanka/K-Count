@@ -23,12 +23,12 @@ struct FoodsAddedView: View {
                     HStack {
                         VStack(alignment: .leading) {
                             Text(food.name)
-                            Text(getQuantity(food: food, quantity: foodsAdded[food] ?? 0))
+                            Text(getServingSize(food: food, servingSize: foodsAdded[food] ?? 0))
                           
                        
                         }
                         Spacer()
-                        Text(calculateCalories(food: food, quantity: foodsAdded[food] ?? 0))
+                        Text(calculateCalories(food: food, servingSize: foodsAdded[food] ?? 0))
                        
                       
                     }
@@ -47,13 +47,13 @@ struct FoodsAddedView: View {
         }
     }
     //
-    func calculateCalories(food: Food, quantity: Double) -> String {
-        return String(format: "%1.f", food.calories * quantity)
+    func calculateCalories(food: Food, servingSize: Double) -> String {
+        return String(format: "%0.1f", food.calories * servingSize)
     }
     
-    func getQuantity(food: Food, quantity: Double) -> String {
+    func getServingSize(food: Food, servingSize: Double) -> String {
        
-        return quantity > 1 ? String(format: "%1.f ", quantity) + food.servingType + "s" : String(format: "%1.f ", quantity) + food.servingType
+        return servingSize > 1 ? String(format: "%0.1f ", servingSize) + food.servingType + "s" : String(format: "%0.f ", servingSize) + food.servingType
     }
 }
 

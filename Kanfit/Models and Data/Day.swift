@@ -11,17 +11,46 @@ import SwiftData
 
 @Model
 class Day {
-    
     var date : Date
     var weight: Double
-    
+   
+
+  
     var formattedDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM d, yyy"
         return formatter.string(from: date)
     }
     
+ 
+    
     var foodsEaten: [Food: Double]
+    
+//  For exporting our data to CSV
+    var csvDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
+        
+    }
+    
+    var foodsEatentoCSV: String {
+       
+        var result: String = ""
+        foodsEaten.forEach { food, amount in
+            
+            
+            let foodData = "(\(food.name)  \(food.calories)  \(amount)   \(food.calories * amount)) "
+           
+            result += foodData
+            
+        }
+     
+        
+       
+        
+        return result
+    }
     
     
 
@@ -37,10 +66,12 @@ class Day {
 
     
     
-    init(date: Date, foodsEaten: [Food: Double], weight: Double) {
+    init(date: Date, foodsEaten: [Food: Double], weight: Double, person: Person) {
         self.date = date
         self.foodsEaten = foodsEaten
         self.weight = weight
+     
+  
     }
     
 
@@ -48,7 +79,8 @@ class Day {
     static let example = Day(
         date: Date().addingTimeInterval(-1006400),
         foodsEaten: [Food.example: 2],
-        weight: 0.0
+        weight: 0.0,
+        person: Person.example
     )
     
   

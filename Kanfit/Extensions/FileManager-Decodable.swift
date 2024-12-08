@@ -10,7 +10,7 @@ import Foundation
 
 extension FileManager {
     
-
+    
     
     func decode<T: Codable>(_ file: String) -> T {
         
@@ -45,10 +45,31 @@ extension FileManager {
         } catch {
             fatalError("Failed to decode \(file) from bundle: \(error.localizedDescription)")
         }
-
         
-            
-        }
+        
+        
     }
+    
+    func saveCSVFile(csvString: String, file: String = "data.csv") -> URL? {
+        
+        guard let documentsURL = self.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("Couldn't find documents directory.")
+        }
+        
+        // Append the file name to the documentsURL
+        let fileURL = documentsURL.appendingPathComponent(file)
+        
+        do {
+            try csvString.write(to: fileURL, atomically: true, encoding: .utf8)
+            print("CSV filed saved to: \(fileURL)")
+            return fileURL
+        }
+        catch {
+            fatalError("Couldn't write CSV file to disk.")
+        }
+        
+    }
+    
+}
     
 

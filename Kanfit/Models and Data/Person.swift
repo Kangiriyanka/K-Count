@@ -40,21 +40,30 @@ class Person {
     }
     
     
-    var BMR: Double {
+  
+    
+    // Amount of calories the person must eat to maintain their weight.
+    var TDEE: Double {
+        
+        calculateTDEE(using: self.weight)
+    }
+    
+    // Calculate TDEE from a given weight
+    func calculateTDEE(using weight: Double) -> Double {
+        var bmr : Double
         
         switch sex {
         case .female:
-            return 10.0 * weight + 6.25 * height - 5.0 * Double(age)  - 161.0
+            bmr =  10.0 * weight + 6.25 * height - 5.0 * Double(age)  - 161.0
         case .male:
-            return 10.0 * weight + 6.25 * height - 5.0 * Double(age) + 5.0
+            bmr =  10.0 * weight + 6.25 * height - 5.0 * Double(age) + 5.0
         }
-    }
-    
-    
-    var TDEE: Double {
         
-        return Double(BMR * activityLevel.multiplier)
-    }
+        return bmr * self.activityLevel.multiplier
+        
+        }
+    
+
     
     init(name: String, age: Int, weight: Double, height: Double, sex: Sex, activityLevel: ActivityLevel) {
         self.name = name

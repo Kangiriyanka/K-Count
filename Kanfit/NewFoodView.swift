@@ -14,6 +14,7 @@ struct NewFoodView: View {
     @State private var  servingType: String = ""
     @State private var servingSize: String = ""
     @State private var duplicateFoodPresented = false
+    @FocusState private var firstFoodNameFieldIsFocused: Bool
     @Binding var existingFoods: [Food]
     @Binding var foodsAdded: [Food: Double]
     @Environment(\.dismiss) private var dismiss
@@ -22,17 +23,21 @@ struct NewFoodView: View {
     var body: some View {
         Section("Add a new food") {
             TextField("Enter food name", text: $foodName)
+                .focused($firstFoodNameFieldIsFocused)
             TextField("Enter calories " , text: $calories)
                 .keyboardType(.decimalPad)
+                .limitDecimals($calories, decimalLimit: 1, prefix: 4)
             TextField("Enter serving type", text: $servingType)
                 .autocapitalization(.none)
             TextField("Enter number of servings", text: $servingSize)
                 .keyboardType(.decimalPad)
+                .limitDecimals($servingSize, decimalLimit: 1, prefix: 4 )
             
             Button("Add", systemImage: "plus") {
                 
                 let newFood = Food(name: foodName, calories: Double(calories) ?? 0, servingType: servingType)
                 writeFood(newFood, existingFoods: existingFoods)
+                resetFields()
             }
             .buttonStyle(AddButton())
             // Disable the add button if one of the fields isn't filled.
@@ -49,11 +54,20 @@ struct NewFoodView: View {
     
     func areFieldsFilled() -> Bool {
         
-        return !foodName.isEmpty && !calories.isEmpty && !servingType.isEmpty
+        return !foodName.isEmpty && !calories.isEmpty && !servingType.isEmpty && !servingSize.isEmpty
+    }
+    
+    func resetFields() {
+        foodName = ""
+        calories = ""
+        servingType = ""
+        servingSize = ""
+        firstFoodNameFieldIsFocused = true
+        
     }
     
     func writeFood(_ food: Food, existingFoods: [Food]) {
-        let url = URL.documentsDirectory.appendingPathComponent("foods.json")
+        let fileURL = URL.documentsDirectory.appendingPathComponent("foods.json")
         // Step 1: Copy existing foods and append the new food
         var updatedFoods = existingFoods
         
@@ -69,7 +83,7 @@ struct NewFoodView: View {
             
             do {
                 let updatedData = try JSONEncoder().encode(updatedFoods)
-                try updatedData.write(to: url, options: [.completeFileProtection])
+                try updatedData.write(to: fileURL, options: [.completeFileProtection])
                 print("\(food.name) saved successfully")
             } catch {
                 print("Error writing to file: \(error)")

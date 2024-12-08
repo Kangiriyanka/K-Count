@@ -12,7 +12,7 @@ import SwiftUI
 extension View {
     //    Binding allows you to use a variable in a view somewhere else
     //    onChange is triggered every time you enter a digit in the TextField
-    func limitDecimals(_ number: Binding<String>, decimalLimit: Int) -> some View {
+    func limitDecimals(_ number: Binding<String>, decimalLimit: Int, prefix: Int) -> some View {
         self
             .onChange(of: number.wrappedValue) {
                 
@@ -26,7 +26,7 @@ extension View {
                 let components = cleanedInput.components(separatedBy: ".")
                 // No decimal
                 if components.count == 1 {
-                    number.wrappedValue = String(number.wrappedValue.prefix(3))
+                    number.wrappedValue = String(number.wrappedValue.prefix(prefix))
                 }
                 
                 else  {

@@ -12,60 +12,78 @@ import SwiftUI
 struct FoodView: View {
     
     let food: Food
-    @State private var servingSize: String = "1"
+    @State private var servingSize: String = "1.0"
     @State private var totalCalories: Double
+    @FocusState private var isServingSizeFocused: Bool
     @Environment(\.dismiss) private var dismiss
     @Binding var foodsAdded: [Food: Double]
     
     
     var body: some View {
         
-        VStack(alignment: .leading) {
-            Text(food.name).font(.title).bold()
-            Text("per " + food.servingType)
-            Divider()
+        NavigationStack {
             
-            HStack {
-                Text("Servings")
-                Spacer()
-                TextField("Servings", text: $servingSize)
-                    .keyboardType(.numberPad)
-                    .onChange(of: servingSize) {
+            VStack(alignment: .leading) {
+                Text(food.name).font(.title).bold()
+                Text("per " + food.servingType)
+                Divider()
+                
+                HStack {
+                    Text("Servings")
+                    Spacer()
+                    TextField("Servings", text: $servingSize)
+                        .keyboardType(.numberPad)
+                        .limitDecimals($servingSize, decimalLimit: 1, prefix: 4)
+                        .onChange(of: servingSize) {
+                            
+                            totalCalories = (Double(servingSize) ?? 1) * food.calories
+                            
+                        }
+                        .focused($isServingSizeFocused).onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                isServingSizeFocused = true
+                            }
+                        }
+                    Text("\(totalCalories, specifier: "%.0f") cals")
+                    
+                } .multilineTextAlignment(.center)
+                    .padding()
+                
+                
+                HStack {
+                    Spacer()
+                    Button("Add", systemImage: "plus") {
                         
-                        totalCalories = (Double(servingSize) ?? 1) * food.calories
+                        foodsAdded[food] = Double(servingSize)
+                        print(foodsAdded)
+                        dismiss()
+                        
                         
                     }
-                Text("\(totalCalories, specifier: "%.0f") cals")
-                
-            } .multilineTextAlignment(.center)
-                .padding()
-            
-            
-            HStack {
-                Spacer()
-                Button("Add", systemImage: "plus") {
-                    
-                    foodsAdded[food] = Double(servingSize)
-                    print(foodsAdded)
-                    dismiss()
                     
                     
+                    .buttonStyle(AddButton())
+                    
+                    Spacer()
+                    
+                    
+                    
+                 
                 }
-                
-                
-                .buttonStyle(AddButton())
-                
-                Spacer()
-                
-                
-                
-                
+               
             }
+            
+        
+          
         }
         .padding()
    
         
 
+    
+    
+
+      
     }
     
     init(food: Food, foodsAdded: Binding<[Food: Double]>) {

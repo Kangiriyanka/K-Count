@@ -10,15 +10,13 @@ import SwiftData
 
 struct ContentView: View {
     
-    
- 
-    
+
     let person = Person.example
     var body: some View {
         
         TabView {
            
-            DaysView()
+            DaysView(person: person)
                 .tabItem {
                     Label("Day", systemImage: "clock")
                 }
@@ -29,6 +27,12 @@ struct ContentView: View {
                     Label("Me", systemImage: "person")
                 }
             
+            OptionsView()
+                .tabItem {
+                    Label("Export", systemImage: "square.and.arrow.up")
+                }
+            }
+            
             
             
         }
@@ -38,7 +42,7 @@ struct ContentView: View {
     
     
 
-}
+
 
 
 #Preview {
