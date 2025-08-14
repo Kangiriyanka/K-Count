@@ -11,20 +11,25 @@ import SwiftData
 
 @Model
 class Day {
-    var date : Date
+    @Attribute(.unique) var date : Date
     var weight: Double
-   
-
-  
     var formattedDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM d, yyy"
         return formatter.string(from: date)
     }
+    var formattedChartDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd"
+        return formatter.string(from: date)
+    }
     
- 
+    var formattedWeight: String {
+        return String(format: "%0.1f", self.weight) 
+    }
     
-    var foodsEaten: [Food: Double]
+    // No more hidden foodEntries hidden around
+    @Relationship(deleteRule: .cascade) var foodEntries = [FoodEntry]()
     
 //  For exporting our data to CSV
     var csvDate: String {
@@ -37,18 +42,14 @@ class Day {
     var foodsEatentoCSV: String {
        
         var result: String = ""
-        foodsEaten.forEach { food, amount in
+        foodEntries.forEach { entry in
             
             
-            let foodData = "(\(food.name)  \(food.calories)  \(amount)   \(food.calories * amount)) "
-           
+            let foodData = "(\(entry.food.name)  \(entry.food.calories)  \(entry.servingSize)   \(entry.food.calories * entry.servingSize)) "
             result += foodData
             
         }
      
-        
-       
-        
         return result
     }
     
@@ -56,8 +57,8 @@ class Day {
 
     var totalCalories: Double {
         var total: Double = 0
-        foodsEaten.forEach { food, amount in
-            total += food.calories * amount
+        foodEntries.forEach { entry in
+            total += entry.food.calories * entry.servingSize
             
         }
         return total
@@ -66,9 +67,9 @@ class Day {
 
     
     
-    init(date: Date, foodsEaten: [Food: Double], weight: Double, person: Person) {
+    init(date: Date, weight: Double, foodEntries : [FoodEntry] ) {
         self.date = date
-        self.foodsEaten = foodsEaten
+        self.foodEntries = foodEntries
         self.weight = weight
      
   
@@ -78,10 +79,17 @@ class Day {
     
     static let example = Day(
         date: Date().addingTimeInterval(-1006400),
-        foodsEaten: [Food.example: 2],
         weight: 0.0,
-        person: Person.example
+        foodEntries: [
+       
+            FoodEntry(food: Food.exampleFruit, servingSize: 2),
+            FoodEntry(food: Food.exampleVegetable, servingSize: 3)
+          
+        ],
+     
+
     )
+    static let emptyDay = Day(date: Date(), weight: 0.0, foodEntries: [])
     
   
 }

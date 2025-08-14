@@ -9,46 +9,100 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    
 
-    let person = Person.example
+    @State private var selectedTab = 0
+  
+    
     var body: some View {
         
-        TabView {
-           
-            DaysView(person: person)
-                .tabItem {
-                    Label("Day", systemImage: "clock")
-                }
+        let hasOnboarded = true
+    
+        if hasOnboarded {
             
-            
-            PersonView(person: person)
-                .tabItem {
-                    Label("Me", systemImage: "person")
+            ZStack(alignment: .bottom) {
+                
+                
+                TabView(selection: $selectedTab){
+                    
+                    LogView()
+                        .tag(0)
+                    
+                    
+                    ProgressView()
+                        .tag(1)
+                    
+                    DataView()
+                        .tag(2)
+                    
+                    
+                    
                 }
-            
-            OptionsView()
-                .tabItem {
-                    Label("Export", systemImage: "square.and.arrow.up")
-                }
+                
             }
             
             
             
+            
+            ZStack {
+                HStack {
+                    ForEach(TabbedItems.allCases, id: \.self) { item in
+                        Button(action: {
+                            selectedTab = item.rawValue
+                        }) {
+                            VStack {
+                                CustomTabItem(
+                                    imageName: item.iconName,
+                                    title: item.title,
+                                    isActive: selectedTab == item.rawValue
+                                )
+                                Text(item.title)
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(selectedTab == item.rawValue ? Color.accentColor: Color.gray)
+                                
+                            }
+                        }
+                    }
+                }
+                
+                .padding()
+                .ignoresSafeArea(.keyboard, edges: .bottom)
+                .toolbar(.hidden, for: .tabBar)
+                
+                
+            }
+            
+            .frame(height: 60)
+            .background(Color.white)
+            .cornerRadius(20)
+            .shadow(radius: 2, x: 0, y: 1)
+            .padding(.horizontal, 35)
+        } else {
+            OnboardingView()
+            
+            
+            
+     }
+       
+        
+    
+     
+      
+        
+        
+      
+        
+        
+            
+            
+            
+            
         }
-        
-        
     }
     
-    
-
-
-
 
 #Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Day.self, configurations: config)
-    container.mainContext.insert(Day.example)
+  
     return ContentView()
-        .modelContainer(container)
+     
+       
 }

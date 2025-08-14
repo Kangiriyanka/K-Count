@@ -10,8 +10,6 @@ import Foundation
 
 extension FileManager {
     
-    
-    
     func decode<T: Codable>(_ file: String) -> T {
         
         // Check if the Documents directory exists
@@ -31,7 +29,6 @@ extension FileManager {
             fatalError("Could not read file at \(fileURL).")
         }
         
-        // Joseph1996Add many more checks while decoding the data
         do {
             return try decoder.decode(T.self, from: data)
         } catch DecodingError.keyNotFound(let key, let context) {
