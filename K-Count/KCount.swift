@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct KanfitApp: App {
+struct KCountApp: App {
    
     var body: some Scene {
         WindowGroup {

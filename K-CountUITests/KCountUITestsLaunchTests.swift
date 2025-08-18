@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class KanfitUITestsLaunchTests: XCTestCase {
+final class KCountUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

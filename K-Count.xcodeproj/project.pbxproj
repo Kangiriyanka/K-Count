@@ -30,24 +30,19 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		8250BF4E2E1B574300A83A88 /* Errors */ = {
+		82F441742CE1211800F2D24B /* K-Count */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Errors;
+			path = "K-Count";
 			sourceTree = "<group>";
 		};
-		82F441742CE1211800F2D24B /* Kanfit */ = {
+		82F441852CE1211900F2D24B /* K-CountTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Kanfit;
+			path = "K-CountTests";
 			sourceTree = "<group>";
 		};
-		82F441852CE1211900F2D24B /* KanfitTests */ = {
+		82F4418F2CE1211900F2D24B /* K-CountUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = KanfitTests;
-			sourceTree = "<group>";
-		};
-		82F4418F2CE1211900F2D24B /* KanfitUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = KanfitUITests;
+			path = "K-CountUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -80,11 +75,10 @@
 		82F441692CE1211800F2D24B = {
 			isa = PBXGroup;
 			children = (
-				82F441742CE1211800F2D24B /* Kanfit */,
-				82F441852CE1211900F2D24B /* KanfitTests */,
-				82F4418F2CE1211900F2D24B /* KanfitUITests */,
+				82F441742CE1211800F2D24B /* K-Count */,
+				82F441852CE1211900F2D24B /* K-CountTests */,
+				82F4418F2CE1211900F2D24B /* K-CountUITests */,
 				82F441732CE1211800F2D24B /* Products */,
-				8250BF4E2E1B574300A83A88 /* Errors */,
 			);
 			sourceTree = "<group>";
 		};
@@ -114,8 +108,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				8250BF4E2E1B574300A83A88 /* Errors */,
-				82F441742CE1211800F2D24B /* Kanfit */,
+				82F441742CE1211800F2D24B /* K-Count */,
 			);
 			name = "K-Count";
 			packageProductDependencies = (
@@ -138,7 +131,7 @@
 				82F441842CE1211900F2D24B /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				82F441852CE1211900F2D24B /* KanfitTests */,
+				82F441852CE1211900F2D24B /* K-CountTests */,
 			);
 			name = "K-CountTests";
 			packageProductDependencies = (
@@ -161,7 +154,7 @@
 				82F4418E2CE1211900F2D24B /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				82F4418F2CE1211900F2D24B /* KanfitUITests */,
+				82F4418F2CE1211900F2D24B /* K-CountUITests */,
 			);
 			name = "K-CountUITests";
 			packageProductDependencies = (
@@ -402,7 +395,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Kanfit/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"K-Count/Preview Content\"";
 				DEVELOPMENT_TEAM = PWG234D888;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -417,7 +410,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = kangiriyanka.Kanfit;
+				PRODUCT_BUNDLE_IDENTIFIER = "kangiriyanka.K-Count";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -432,7 +425,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Kanfit/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"K-Count/Preview Content\"";
 				DEVELOPMENT_TEAM = PWG234D888;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -447,7 +440,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = kangiriyanka.Kanfit;
+				PRODUCT_BUNDLE_IDENTIFIER = "kangiriyanka.K-Count";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
