@@ -16,7 +16,8 @@ struct UserSettings: Codable {
     var height: Double
     var sex: Sex
     var activityLevel: ActivityLevel
-    var measurementPreference: MeasurementSystem
+    var heightPreference: MeasurementSystem
+    var weightPreference: MeasurementSystem
     
     var TDEE: Double {
         calculateTDEE(using: weight)
@@ -57,7 +58,8 @@ struct UserSettings: Codable {
         height: Double = 0.0,
         sex: Sex = .male,
         activityLevel: ActivityLevel = .sedentary,
-        measurementPreference: MeasurementSystem = .metric
+        heightPreference: MeasurementSystem = .metric,
+        weightPreference: MeasurementSystem = .metric
     ) {
         self.name = name
         self.birthday = birthday
@@ -65,13 +67,14 @@ struct UserSettings: Codable {
         self.height = height
         self.sex = sex
         self.activityLevel = activityLevel
-        self.measurementPreference = measurementPreference
+        self.heightPreference = heightPreference
+        self.weightPreference = weightPreference
     }
     
     // MARK: - Codable
     
     enum CodingKeys: String, CodingKey {
-        case name, birthday, weight, height, sex, activityLevel, measurementPreference
+        case name, birthday, weight, height, sex, activityLevel,  heightPreference, weightPreference
     }
     
     init(from decoder: Decoder) throws {
@@ -82,7 +85,8 @@ struct UserSettings: Codable {
         self.height = try container.decode(Double.self, forKey: .height)
         self.sex = try container.decode(Sex.self, forKey: .sex)
         self.activityLevel = try container.decode(ActivityLevel.self, forKey: .activityLevel)
-        self.measurementPreference = try container.decode(MeasurementSystem.self, forKey: .measurementPreference)
+        self.heightPreference = try container.decode(MeasurementSystem.self, forKey: .heightPreference)
+        self.weightPreference = try container.decode(MeasurementSystem.self, forKey: .weightPreference)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -93,7 +97,8 @@ struct UserSettings: Codable {
         try container.encode(height, forKey: .height)
         try container.encode(sex, forKey: .sex)
         try container.encode(activityLevel, forKey: .activityLevel)
-        try container.encode(measurementPreference, forKey: .measurementPreference)
+        try container.encode(heightPreference, forKey: .heightPreference)
+        try container.encode(weightPreference, forKey: .weightPreference)
     }
     
   
@@ -118,6 +123,7 @@ struct UserSettings: Codable {
         height: 176,
         sex: .male,
         activityLevel: .lightActivity,
-        measurementPreference: .metric
+        heightPreference: .metric,
+        weightPreference: .imperial
     )
 }

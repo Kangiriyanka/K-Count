@@ -31,7 +31,8 @@ struct OnboardingView: View {
     @State private var showHeightView = false
     @State private var hasPickedHeight = false
     @State private var hasPickedWeight = false
-    @State private var measurementPreference: MeasurementSystem = .metric
+    @State private var heightPreference: MeasurementSystem = .metric
+    @State private var weightPreference: MeasurementSystem = .metric
     @State private var feet: Int = 0
     @State private var inches: Int = 0
     
@@ -82,7 +83,7 @@ struct OnboardingView: View {
                         
                         if hasPickedHeight {
                             
-                            Text(measurementPreference == .metric ? height.centimetersDescription :
+                            Text(heightPreference == .metric ? height.centimetersDescription :
                                     height.feetInchesDescription)
                         } else {
                             Text("Tap to select height")
@@ -98,7 +99,7 @@ struct OnboardingView: View {
                         showHeightView.toggle()
                     }
                     .sheet(isPresented: $showHeightView) {
-                        CustomHeightPicker(preference: $measurementPreference, height: $height)
+                        CustomHeightPicker(preference: $heightPreference, height: $height)
                                     .presentationDetents([.fraction(0.40)])
                             }
                     .onChange(of: height) { _, newValue in
@@ -112,7 +113,7 @@ struct OnboardingView: View {
                         Spacer()
                         
                         if hasPickedWeight {
-                            Text(measurementPreference == .metric ? weight.kilogramsDescription :
+                            Text(weightPreference == .metric ? weight.kilogramsDescription :
                                     weight.poundsDescription)
                         } else {
                             Text("Tap to select weight")
@@ -124,7 +125,7 @@ struct OnboardingView: View {
                         showWeightView.toggle()
                     }
                     .sheet(isPresented: $showWeightView) {
-                        CustomWeightPicker(preference: $measurementPreference, weight: $weight)
+                        CustomWeightPicker(preference: $weightPreference, weight: $weight)
                                     .presentationDetents([.fraction(0.40)])
                             }
                     .onChange(of: weight) { _, newValue in
@@ -166,7 +167,8 @@ struct OnboardingView: View {
                             userSettings.weight = weight.asKilograms
                             userSettings.sex = sexAssigned
                             userSettings.activityLevel = activityLevel
-                            userSettings.measurementPreference = measurementPreference
+                            userSettings.heightPreference = heightPreference
+                            userSettings.weightPreference = weightPreference
                             hasOnboarded = true
                         }
                         
