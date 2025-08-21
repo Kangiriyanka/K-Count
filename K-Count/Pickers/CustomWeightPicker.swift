@@ -1,36 +1,26 @@
-//
-//  CustomWeightPicker.swift
-//  K-Count
-//
-//  Created by Kangiriyanka The Single Leaf on 2025/08/19.
-//
-
 import SwiftUI
 
-struct CustomHeightPicker: View {
+struct CustomWeightPicker: View {
     
-    
+  
     
     @Binding var preference: MeasurementSystem
-    @Binding var height: HeightValue
+    @Binding var weight: WeightValue
     @Environment(\.dismiss) private var dismiss
-    
     
     var body: some View {
         
         HStack {
             Button(""){}
             Spacer()
-            Text("Your Height").fontWeight(.bold)
+            Text("Your Weight").fontWeight(.bold)
             Spacer()
             Button("", systemImage: "checkmark.circle") {
-                dismiss()
-              
+              dismiss()
                 
             }
         }
         .padding()
-   
         Divider()
         Picker("System", selection: $preference) {
             ForEach(MeasurementSystem.allCases, id: \.self) { system in
@@ -41,13 +31,13 @@ struct CustomHeightPicker: View {
         .padding()
         if preference == .metric {
             
-            MetricRulerPicker(selectedValue: $height)
+            KiloPicker(selectedValue: $weight)
             
         }
         
         else {
             
-            ImperialRulerPicker(selectedValue: $height)
+            PoundPicker(selectedValue: $weight)
             
         }
         
@@ -55,6 +45,17 @@ struct CustomHeightPicker: View {
 }
 
 #Preview {
-    CustomHeightPicker(preference: .constant(MeasurementSystem.metric), height: .constant(HeightValue.metric(170)))
+    WeightPreviewWrapper()
 }
 
+private struct WeightPreviewWrapper: View {
+    @State private var preference: MeasurementSystem = .metric
+    @State private var weight: WeightValue = .metric(100)
+    
+    var body: some View {
+        CustomWeightPicker(
+            preference: $preference,
+            weight: $weight
+        )
+    }
+}

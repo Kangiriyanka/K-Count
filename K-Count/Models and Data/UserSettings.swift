@@ -5,44 +5,38 @@
 //  Created by Kangiriyanka The Single Leaf on 2024/11/10.
 //
 
-// Discussion Points: TDEE for individuals that don't identify with being male or female
 import Foundation
 import SwiftData
 
-
 struct UserSettings: Codable {
-    
+
     var name: String
-    var age: Int
+    var birthday: Date
     var weight: Double
     var height: Double
     var sex: Sex
     var activityLevel: ActivityLevel
+    var measurementPreference: MeasurementSystem
+    
     var TDEE: Double {
-        calculateTDEE(using: self.weight)
+        calculateTDEE(using: weight)
     }
     
-    enum CodingKeys: String, CodingKey {
-        case name = "name"
-        case age = "age"
-        case weight = "weight"
-        case height = "height"
-        case sex = "sex"
-        case activityLevel = "activityLevel"
+    var age: Int {
+        let calendar = Calendar.current
+        let ageComponents = calendar.dateComponents([.year], from: birthday, to: Date())
+        return ageComponents.year ?? 0
     }
-    
-
     
     enum Sex: String, CaseIterable, Codable {
         case male, female
     }
+    
     enum ActivityLevel: String, CaseIterable, Codable {
         case sedentary = "Sedentary"
         case lightActivity = "Light Activity"
         case moderateActivity = "Moderate Activity"
         case vigorousActivity = "Vigorous Activity"
-        
-        
         
         var multiplier: Double {
             switch self {
@@ -54,77 +48,76 @@ struct UserSettings: Codable {
         }
     }
     
+
     
-    
-    
-    // Amount of calories the User must eat to maintain their weight.
-    // Calculate TDEE from a given weight
-    func calculateTDEE(using weight: Double) -> Double {
-        var bmr : Double
-        
-        switch sex {
-        case .female:
-            bmr =  10.0 * weight + 6.25 * height - 5.0 * Double(age)  - 161.0
-        case .male:
-            bmr =  10.0 * weight + 6.25 * height - 5.0 * Double(age) + 5.0
-        }
-        
-        
-        return bmr * self.activityLevel.multiplier
-        
-    }
-    
-   
-    init() {
-        self.name = ""
-        self.age = 0
-        self.weight = 0.0
-        self.height = 0.0
-        self.sex = .male
-        self.activityLevel = .sedentary
-    }
-    
-    init(name: String, age: Int, weight: Double, height: Double, sex: Sex, activityLevel: ActivityLevel) {
+    init(
+        name: String = "",
+        birthday: Date = Date(),
+        weight: Double = 0.0,
+        height: Double = 0.0,
+        sex: Sex = .male,
+        activityLevel: ActivityLevel = .sedentary,
+        measurementPreference: MeasurementSystem = .metric
+    ) {
         self.name = name
-        self.age = age
+        self.birthday = birthday
         self.weight = weight
         self.height = height
         self.sex = sex
         self.activityLevel = activityLevel
+        self.measurementPreference = measurementPreference
     }
     
-   
-
-
+    // MARK: - Codable
     
-    init(from decoder: any Decoder) throws {
+    enum CodingKeys: String, CodingKey {
+        case name, birthday, weight, height, sex, activityLevel, measurementPreference
+    }
+    
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.name = try container.decode(String.self, forKey: .name)
-        self.age = try container.decode(Int.self, forKey: .age)
+        self.birthday = try container.decode(Date.self, forKey: .birthday)
         self.weight = try container.decode(Double.self, forKey: .weight)
         self.height = try container.decode(Double.self, forKey: .height)
-        self.sex = try container.decode(UserSettings.Sex.self, forKey: .sex)
-        self.activityLevel = try container.decode(UserSettings.ActivityLevel.self, forKey: .activityLevel)
-     
+        self.sex = try container.decode(Sex.self, forKey: .sex)
+        self.activityLevel = try container.decode(ActivityLevel.self, forKey: .activityLevel)
+        self.measurementPreference = try container.decode(MeasurementSystem.self, forKey: .measurementPreference)
     }
     
-    func encode(to encoder: any Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
-        try container.encode(age, forKey: .age)
+        try container.encode(birthday, forKey: .birthday)
         try container.encode(weight, forKey: .weight)
         try container.encode(height, forKey: .height)
         try container.encode(sex, forKey: .sex)
         try container.encode(activityLevel, forKey: .activityLevel)
+        try container.encode(measurementPreference, forKey: .measurementPreference)
     }
     
+  
     
-    
-        
-    static let example = UserSettings(name: "Kangiriyanka", age: 28, weight: 79, height: 176, sex: .male, activityLevel: .lightActivity)
-        
-        
+    func calculateTDEE(using weight: Double) -> Double {
+        let bmr: Double
+        switch sex {
+        case .female:
+            bmr = 10 * weight + 6.25 * height - 5 * Double(age) - 161
+        case .male:
+            bmr = 10 * weight + 6.25 * height - 5 * Double(age) + 5
+        }
+        return bmr * activityLevel.multiplier
     }
+    
 
-
-
+    
+    static let example = UserSettings(
+        name: "Kangiriyanka",
+        birthday: Calendar.current.date(byAdding: .year, value: -29, to: Date()) ?? Date(),
+        weight: 79,
+        height: 176,
+        sex: .male,
+        activityLevel: .lightActivity,
+        measurementPreference: .metric
+    )
+}

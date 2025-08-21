@@ -23,7 +23,6 @@ struct FoodsAddedView: View {
         }
        
     
-            
                 
         ForEach($foodsAdded, id: \.self) { $entry in
                     HStack {
