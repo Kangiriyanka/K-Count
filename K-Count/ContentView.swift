@@ -11,13 +11,15 @@ import SwiftData
 struct ContentView: View {
 
     @State private var selectedTab = 0
+    @AppStorage("userSettings") var userSettings = UserSettings()
+    
   
     
     var body: some View {
         
-        let hasOnboarded = true
     
-        if hasOnboarded {
+    
+        if (userSettings.name != "") {
             
             ZStack(alignment: .bottom) {
                 

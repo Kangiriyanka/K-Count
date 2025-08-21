@@ -89,6 +89,42 @@ class Day {
      
 
     )
+    
+    static let examples: [Day] = [
+            Day(
+                date: Date().addingTimeInterval(-86400 * 3),
+                weight: 70.5,
+                foodEntries: [
+                    FoodEntry(food: Food.exampleFruit, servingSize: 2),
+                    FoodEntry(food: Food.exampleVegetable, servingSize: 1)
+                ]
+            ),
+            Day(
+                date: Date().addingTimeInterval(-86400 * 2),
+                weight: 70.0,
+                foodEntries: [
+                    FoodEntry(food: Food.exampleFruit, servingSize: 1),
+                    FoodEntry(food: Food.exampleVegetable, servingSize: 2)
+                ]
+            ),
+            Day(
+                date: Date().addingTimeInterval(-86400),
+                weight: 69.8,
+                foodEntries: [
+                    FoodEntry(food: Food.exampleFruit, servingSize: 3),
+                    FoodEntry(food: Food.exampleVegetable, servingSize: 1)
+                ]
+            ),
+            Day(
+                date: Date(),
+                weight: 69.7,
+                foodEntries: [
+                    FoodEntry(food: Food.exampleFruit, servingSize: 2),
+                    FoodEntry(food: Food.exampleVegetable, servingSize: 3)
+                ]
+            )
+        ]
+    
     static let emptyDay = Day(date: Date(), weight: 0.0, foodEntries: [])
     
   

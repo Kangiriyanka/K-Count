@@ -76,5 +76,5 @@ struct ChartView: View {
 }
 
 #Preview {
-    ChartView(days: [Day.example])
+    ChartView(days: Day.examples)
 }

@@ -1,16 +1,16 @@
 //
-//  OnboardingView.swift
+//  EditPersonView.swift
 //  Kanfit
 //
-//  Created by Kangiriyanka The Single Leaf on 2025/07/06.
+//  Created by Kangiriyanka The Single Leaf on 2024/11/10.
 //
 
 import SwiftUI
 
-struct OnboardingView: View {
+struct EditUserView: View {
+    
     
     @AppStorage("userSettings") var userSettings = UserSettings()
-    @AppStorage("hasOnboarded") var hasOnboarded: Bool = false
     @State private var name: String = ""
     @State private var height: String = ""
     @State private var weight: String = ""
@@ -21,89 +21,92 @@ struct OnboardingView: View {
     @State private var errorMessage = ""
     @State private var showError = false
     
+   
+ 
+    
+    
+    @Environment(\.dismiss) private var dismiss
+    
     
     
     var body: some View {
         NavigationStack {
-            
-            
-          
-            
-            
             Form {
                 
-                Text("Welcome to K-Count!").font(.title).bold()
-                
-                
-                
-                
-                Section("Personal information") {
-                    
+                Section("General information") {
                     
                     HStack {
-                        Text("Name")
-                        TextField("Name", text: $name)
-                            .keyboardType(.default)
-                            .multilineTextAlignment(.trailing)
-                    }
+                         Text("Name")
+                             // fixed label width
+                         TextField("Name", text: $name)
+                             .multilineTextAlignment(.trailing)
+                     }
                     
-                    Picker("Sex assigned at birth", selection: $sexAssigned) {
-                        
-                        ForEach (UserSettings.Sex.allCases, id: \.self) { sex in
-                            Text(sex.rawValue)
-                                .tag(sex)
-                        }
-                        
-                    }
+               
+                    
+                   
                 }
-                
-                Section("Physical information") {
+                Section("Physical Stats (Age - Weight - Height)") {
+                    
+                    
                     HStack {
-                        
                         Text("Age")
-                        TextField("Enter your age", text: $age)
+                   
+                        TextField("Age", text: $age)
                             .multilineTextAlignment(.trailing)
-                            .keyboardType(.decimalPad)
                     }
+                        
+                        .limitDecimals($age, decimalLimit: 0, prefix: 3)
+                        .keyboardType(.numberPad)
                     
                     HStack {
                         Text("Height")
-                        TextField("Enter your height", text: $height)
+                        TextField("Weight", text: $weight)
+                            .limitDecimals($weight, decimalLimit: 1, prefix: 4)
+                            .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                         
-                            .keyboardType(.decimalPad)
                     }
-                    
                     HStack {
-                        Text("Weight")
-                        
-                        TextField("Enter your weight", text: $weight)
-                            .multilineTextAlignment(.trailing)
-                        
-                        
+                        Text("Height")
+                        TextField("Height", text: $height)
+                            .limitDecimals($height, decimalLimit: 1, prefix: 4)
                             .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.trailing)
                     }
                     
-                    
-                
-                
-                
-                
-                Picker("Lifestyle", selection: $activityLevel) {
-                    
-                    ForEach (UserSettings.ActivityLevel.allCases, id: \.self) { activityLevel in
-                        Text(activityLevel.rawValue)
-                            .tag(activityLevel)
+                    Picker("Lifestyle", selection: $activityLevel) {
+                        
+                        ForEach (UserSettings.ActivityLevel.allCases, id: \.self) { activityLevel in
+                            Text(activityLevel.rawValue)
+                                .tag(activityLevel)
+                        }
+                        
                     }
                     
                 }
+                
+                
+              
+                
+                Section("Other") {
+                    
+                }
+                
+                
+                
             }
-                        
-                    
-                    
-                    
-                    
-                    Button("All Set!") {
+            .onAppear {
+                name = userSettings.name
+                height = String(userSettings.height)
+                weight = String(userSettings.weight)
+                age = String(userSettings.age)
+                activityLevel = userSettings.activityLevel
+                sexAssigned = userSettings.sex
+            }
+            .toolbar {
+                ToolbarItem {
+                    Button("Save", systemImage: "checkmark.circle") {
                         
                         if validateUserDetails() {
                             userSettings.name = name
@@ -112,29 +115,29 @@ struct OnboardingView: View {
                             userSettings.weight = Double(weight) ?? 0
                             userSettings.sex = sexAssigned
                             userSettings.activityLevel = activityLevel
-                            hasOnboarded = true
+                          
                         }
-                        
-                        
+                        dismiss()
+                      
                         
                     }
-                    .frame(maxWidth: .infinity)
-                    .listRowBackground(EmptyView())
-                    .buttonStyle(AddButton())
-                }
-            
-                .alert(errorTitle, isPresented: $showError) {
-                    Button("OK") { }
-                } message: {
-                    Text(errorMessage)
+                    
                 }
             }
-            
+            .alert(errorTitle, isPresented: $showError) {
+                Button("OK") {}
+                
+            } message: {
+                
+                Text(errorMessage)
+                
+            }
+            .navigationTitle("User Information")
+            .navigationBarTitleDisplayMode(.inline)
         }
+        
+    }
     
-    
-    
-    // MARK: - Validates the user input.
     func validateUserDetails() -> Bool {
         
         if name.count < 2 {
@@ -165,10 +168,8 @@ struct OnboardingView: View {
         
         
      }
-        
     
-    
-    
+
     
     func isValidAge() -> Int? {
         
@@ -176,7 +177,7 @@ struct OnboardingView: View {
         return age
     }
     
-    
+
     func isValidWeight() -> Double? {
         
         guard let weight = Double(weight), weight >= 0.0 && weight <= 1000.0 else { return nil}
@@ -186,21 +187,21 @@ struct OnboardingView: View {
     func isValidHeight() -> Double? {
         guard let height = Double(height), height >= 0.0 && height <= 300.0 else { return nil}
         return height
-        
-        
+    
+       
     }
-    
-    
+
     func inputError(title: String, message: String) {
         errorTitle = title
         errorMessage = message
         showError = true
     }
+    
+
+   
 }
 
-    
-
 #Preview {
-    OnboardingView()
-    
+
+    EditUserView()
 }
