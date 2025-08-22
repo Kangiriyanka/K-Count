@@ -96,35 +96,7 @@ struct AllFoodsView: View {
  
 
     
-//    func saveFoods(updatedFoods: [Food]) {
-//            
-//               
-//            
-//    }
-           
-            
-        
-//        func clearFoods() {
-//            
-//            
-//            let fileManager = FileManager.default
-//            // Check if the directory exists
-//            guard let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
-//                print("Could not locate the Documents directory.")
-//                return
-//            }
-//            
-//            
-//            let fileURL = documentsURL.appendingPathComponent("foods.json")
-//            do {
-//                
-//                let emptyData = Data("[]".utf8) // Or use "{}" for an empty dictionary
-//                try emptyData.write(to: fileURL)
-//            }
-//            catch {
-//                print("Error reading contents")
-//            }
-//        }
+
 
     
 }

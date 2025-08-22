@@ -17,14 +17,9 @@ struct CustomDatePickerView: View {
     // The parenthesis computes the range to be assigned to yearRange.
     private let yearRange: ClosedRange<Date> = {
         let calendar = Calendar.current
-        guard let minDate = calendar.date(byAdding: .year, value: -10, to: .now),
-              let maxDate = calendar.date(from: calendar.dateComponents([.year, .month, .day], from: .now)) else {
-            fatalError("Failed to create year range")
-        }
+        let minDate = calendar.date(byAdding: .year, value: -10, to: .now)!
+        let maxDate = calendar.date(from: calendar.dateComponents([.year, .month, .day], from: .now))!
         return minDate...maxDate
-       
-        
-        
     }()
     
     

@@ -1,16 +1,16 @@
 
 
-// Food row contains
+// A row containing the food name, the serving size under it and the calories on the extreme right.
+// Serving sizes are represented with 1 decimal and calories with whole numbers
+// Adds plural to serving type if the serving size is bigger than a unit.
+// The FoodRow is itself a NavigationLink that leads to the EditPortionsView
 
 import SwiftUI
 struct FoodEntryRow: View {
     let foodEntry: FoodEntry
     var body: some View {
         
-        // A row containing the food name, the serving size under it and the calories on the extreme right.
-        // Serving sizes are represented with 1 decimal and calories with whole numbers
-        // Adds plural to serving type if the serving size is bigger than a unit.
-        // The FoodRow is itself a NavigationLink that leads to the EditPortionsView
+      
         
         
         

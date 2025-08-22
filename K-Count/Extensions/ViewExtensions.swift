@@ -8,144 +8,127 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Card Modifiers
 
-struct DataCard : ViewModifier {
-    let gradient = Gradient(stops:  [
-        Gradient.Stop(color: Color.burntOrange.opacity(0.8), location: 0.1),
-        
-        Gradient.Stop(color: Color.burntOrange.opacity(0.7), location: 0.6),
-  
-    ])
+struct DataCard: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .frame(width: 300, height: 90)
-            
-            .foregroundStyle(Color.black).bold()
-            .font(.title3)
-            .contentShape(Rectangle())
-
-            .background(LinearGradient(gradient: gradient, startPoint: .top, endPoint: .bottom))
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-           
-         
-            
-        
+            .frame(maxWidth: .infinity, minHeight: 50)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .font(.body.weight(.medium))
+            .foregroundStyle(.white)
+            .background(Color.burntOrange.opacity(0.8), in: RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.burntOrange.opacity(0.3)))
+            .shadow(color: Color.burntOrange.opacity(0.3), radius: 3)
     }
 }
 
-struct SmallDataCard : ViewModifier {
-    
+// MARK: - Previews
+
+#Preview("DataCard Styles") {
+    VStack(spacing: 20) {
+        Text("Data Card Example")
+            .dataCardStyle()
+        
+        Text("Small Data Card Example")
+            .smallDataCardStyle()
+        
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Weight: 75.5 kg")
+            Text("Height: 180 cm")
+            Text("BMI: 23.3")
+        }
+        .dataCardStyle()
+        
+        HStack {
+            Text("Steps")
+            Spacer()
+            Text("10,247")
+                .fontWeight(.semibold)
+        }
+        .smallDataCardStyle()
+    }
+    .padding()
+    .background(Color.gray.opacity(0.1))
+}
+
+struct SmallDataCard: ViewModifier {
     func body(content: Content) -> some View {
         content
-            
-            .padding()
-            .foregroundStyle(Color.black).bold()
-            .background(Color.white)
-            
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .shadow(radius: 2, x: 0, y: 1)
-            
-
-        
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(.white, in: RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(0.06), radius: 2)
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(.gray.opacity(0.1)))
     }
 }
+
+// MARK: - Custom Shapes
 
 struct LeftBorder: Shape {
-  
-
     func path(in rect: CGRect) -> Path {
         var path = Path()
-
-        // Calculate the starting and ending points for the line
-        let startY = rect.minY
-        let endY = rect.maxY
-
-        path.move(to: CGPoint(x: rect.minX, y: startY))
-        path.addLine(to: CGPoint(x: rect.minX, y: endY))
-
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
         return path
     }
 }
-    
+
+// MARK: - View Extensions
 
 extension View {
-    
-
-  
     func endTextEditing() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
-                                        to: nil, from: nil, for: nil)
-      }
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil, from: nil, for: nil
+        )
+    }
     
     func borderedBackground(_ color: Color) -> some View {
-            
-           self.listRowBackground(
-               ZStack(alignment: .leading) {
-                   Color.white // Main background color
-                   LeftBorder()
-                       .stroke(color, lineWidth: 15)
-                     
-                   
-               }
-              
-           
-           )
-        
-       
-        
-       }
-
- 
+        listRowBackground(
+            ZStack(alignment: .leading) {
+                Color.white
+                LeftBorder()
+                    .stroke(color, lineWidth: 15)
+            }
+        )
+    }
+    
     func dataCardStyle() -> some View {
         modifier(DataCard())
     }
-  
+    
     func smallDataCardStyle() -> some View {
         modifier(SmallDataCard())
     }
     
-    
-    //    Binding allows you to use a variable in a view somewhere else
-    //    onChange is triggered every time you enter a digit in the TextField
     func limitDecimals(_ number: Binding<String>, decimalLimit: Int, prefix: Int) -> some View {
-        self
-            .onChange(of: number.wrappedValue) {
-                
-                
-                let cleanedInput = number.wrappedValue
-                    .replacingOccurrences(of:  "\\.{2,}", with: ".", options: .regularExpression)
-                    .replacingOccurrences(of: "^0|^\\.", with: "", options: .regularExpression)
-                    .replacingOccurrences(of: "[^0-9.]", with: "", options: .regularExpression)
-                
-                number.wrappedValue = cleanedInput
-                let components = cleanedInput.components(separatedBy: ".")
-                // No decimal
-                if components.count == 1 {
-                    number.wrappedValue = String(number.wrappedValue.prefix(prefix))
-                }
-                
-                else  {
-                    
-                    let integerPart = components[0]
-                    let totalLimit = integerPart.count + decimalLimit + 1
-                    number.wrappedValue = String(number.wrappedValue.prefix(totalLimit))
-                }
+        self.onChange(of: number.wrappedValue) { _,_ in
+            let input = number.wrappedValue
+            
+            // Remove invalid characters, keep only numbers and one decimal point
+            let filtered = input.replacingOccurrences(of: "[^0-9.]", with: "", options: .regularExpression)
+            
+            // Handle multiple decimal points
+            let components = filtered.components(separatedBy: ".")
+            var result = components[0]
+            
+            if components.count > 1 {
+                result += "." + components[1]
             }
+            
+            // Apply length limits
+            if result.contains(".") {
+                let parts = result.components(separatedBy: ".")
+                let integerPart = String(parts[0].prefix(prefix))
+                let decimalPart = parts.count > 1 ? String(parts[1].prefix(decimalLimit)) : ""
+                result = integerPart + (decimalPart.isEmpty ? "" : "." + decimalPart)
+            } else {
+                result = String(result.prefix(prefix))
+            }
+            
+            number.wrappedValue = result
+        }
     }
-    
-    
-    
 }
-    
-    
- 
-
-                    
-                    
-               
- 
-    
-    
-    
-
-

@@ -8,110 +8,74 @@
 import SwiftUI
 import SwiftData
 
-
-
 struct DataView: View {
     
-    @Query(sort: \Day.date, order: .reverse) var days : [Day]
-    
- 
+    @Query(sort: \Day.date, order: .reverse) var days: [Day]
     @State private var exportFileURL: URL? = nil
-  
 
     var body: some View {
         NavigationStack {
-            
             ScrollView {
-                VStack(alignment: .leading) {
+                VStack(spacing: 16) {
                     
-                    VStack {
-                        Button(action: {
-                            exportDays(days)
-                        }) {
-                            VStack {
-                                Text("Generate days report")
-                                if let url = exportFileURL {
-                                    
-                                    ShareLink(item: url) {
-                                        Label("Share", systemImage: "square.and.arrow.up")
-                                    }
-                                    
+                    Button(action: {
+                        exportDays(days)
+                    }) {
+                        VStack {
+                            Text("Export CSV")
+                            if let url = exportFileURL {
+                                ShareLink(item: url) {
+                                    Label("Share", systemImage: "square.and.arrow.up")
                                 }
                             }
-                            
-                            .contentShape(Rectangle())
-                            .dataCardStyle()
                         }
+                        .contentShape(Rectangle())
+                        .dataCardStyle()
                     }
-                    
-                    
                     
                     NavigationLink(destination: AllFoodsView()) {
                         VStack {
-                            Text("See all foods")
-                            
+                            Text("Foods Data")
                         }
-                        
                         .dataCardStyle()
-                        
-                        
-                        
                     }
                     
-                    NavigationLink(destination: AllDaysView()){
+                    NavigationLink(destination: AllDaysView()) {
                         VStack {
-                            Text("See all days")
+                            Text("Days Data")
                         }
                         .dataCardStyle()
-                        
-                        
-                        
                     }
                     
-                    .toolbar {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            
-                                NavigationLink(destination: EditUserView()) {
-                                    Image(systemName: "pencil")
-                                }
-                                
-                                }
-                            }
-                    .navigationBarTitle("Data", displayMode: .automatic)
+                    NavigationLink(destination: UserSettingsView()) {
+                        VStack {
+                            Text("User Settings")
+                        }
+                        .dataCardStyle()
+                    }
                 }
+                .padding(.horizontal)
             }
-      
-          
+            .navigationBarTitle("Data", displayMode: .automatic)
         }
     }
-        
-            
-    
-    
     
     func exportDays(_ days: [Day]) -> Void {
-        
         let fileManager = FileManager.default
         var csvString = "Date,Weight (kg),Total Calories, Food Log\n"
         
         for day in days {
-            
             if day.weight != 0 {
                 let row = "\(day.csvDate),\(day.weight),\(day.totalCalories), \(day.foodsEatentoCSV)\n"
                 csvString.append(row)
             }
         }
+        
         if let URL = fileManager.saveCSVFile(csvString: csvString) {
-            
             exportFileURL = URL
-          
         }
-       
     }
-    
-
-    }
-
+}
 
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)

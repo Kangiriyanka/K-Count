@@ -12,14 +12,13 @@ struct ContentView: View {
 
     @State private var selectedTab = 0
     @AppStorage("userSettings") var userSettings = UserSettings()
-    
-  
+    @AppStorage("hasOnboarded") var hasOnboarded: Bool = false
     
     var body: some View {
         
     
     
-        if (userSettings.name != "") {
+        if (hasOnboarded) {
             
             ZStack(alignment: .bottom) {
                 

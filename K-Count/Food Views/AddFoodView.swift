@@ -1,20 +1,8 @@
-//
-//  AddFood.swift
-//  Kanfit
-//
-//  Created by Kangiriyanka The Single Leaf on 2024/11/10.
-//
-
-
-// Discussion Points: Usage of tags in the Picker.
-
 import SwiftUI
 import SwiftData
 
-
-
 enum Modes: String, CaseIterable {
-    case search = "Search"
+    case search = "My Foods"
     case addNew = "New Food"
 }
 
@@ -32,14 +20,13 @@ struct CustomPicker: View {
                 }) {
                     Text(mode.rawValue)
                         .font(.headline)
-                        .padding()
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
                         .background(
                             ZStack {
                                 if selectedMode == mode {
                                     RoundedRectangle(cornerRadius: 20)
                                         .fill(Color.accentColor)
-                                        
-                                        
                                         .matchedGeometryEffect(id: "background", in: namespace)
                                 }
                             }
@@ -53,205 +40,142 @@ struct CustomPicker: View {
     }
 }
 
-
 struct AddFoodView: View {
-    
     @Environment(\.dismiss) var dismiss
     @Query var foods: [Food]
     @Bindable var day: Day
     @State private var foodsAdded: [FoodEntry] = []
-    @State private var foodName = ""
-    @State private var calories = ""
-    @State private var servingType = ""
-    @State private var addExistingFood = false
     @State private var searchText: String = ""
     @State private var selectedMode: Modes = .search
     @State private var showingPopover: Bool = false
     @State private var isClicked = false
-  
-    
-    
-    
-    
- 
-    
+
     var filteredFoods: [Food] {
-            if searchText.isEmpty {
-                return foods
-            } else {
-                return foods.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
-            }
+        let filtered = if searchText.isEmpty {
+            foods
+        } else {
+            foods.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
-   
-   
+        
+        return filtered.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+    }
 
     var body: some View {
-        
         NavigationStack {
-            
-          
-            
-            Form {
-                
-            
-                Section("Select a mode") {
-                 
-                    CustomPicker(selectedMode: $selectedMode)
-                        .frame(maxWidth: .infinity, maxHeight: 400)
-                        .background(RoundedRectangle(cornerRadius: 20).fill(Color.white))
-                        
-                      
-                        .shadow(radius: 2, x: 0, y: 0.5)
-        
-                    
+            VStack(spacing: 16) {
+         
+                CustomPicker(selectedMode: $selectedMode)
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 8).fill(Color.white))
+                    .shadow(radius: 2, x: 0, y: 0.2)
+
+             
+                Group {
+                    if selectedMode == .addNew {
+                        NewFoodView(foodsAdded: $foodsAdded)
+                            .transition(.move(edge: .trailing).combined(with: .opacity))
                     }
-                .listRowBackground(Color.clear)
-               
-                
-                 
-                
-                
-                if selectedMode == .addNew {
-                    
-                  
-                    NewFoodView(foodsAdded: $foodsAdded)
-                       
-                       
-                      
-                   
-                    
-                } else if selectedMode == .search {
-                    
-                    Section("List of Foods") {
-                        if foods.isEmpty {
-                            
-                            ContentUnavailableView {
-                                Label("No foods added", systemImage: "basket")
-                            } description: {
-                                Text("Create a new food by tapping on New Food")
-                            }
-                            
-                        }
-                        else {
-                        
-                            
-                            List {
-                                ForEach(filteredFoods, id: \.self  ) { food in
-                                    NavigationLink(destination: FoodView(food: food, foodsAdded: $foodsAdded)) {
-                                        
-                                        VStack(alignment: .leading){
-                                            Text(food.name)
-                                            HStack {
-                                                ( Text(food.calories.formatted() + " cal")
-                                                  +
-                                                  Text(" / \(food.servingType)")
-                                                ).foregroundStyle(.secondary)
-                                            }
-                                            
-                                            
-                                            
-                                        }
-                                        
-                                        
-                                    }
-                                    
-                                    
-                                }
-                                
-                            }
-                            
-                            
-                        }
-                        
+                    if selectedMode == .search {
+                        foodListSection
+                            .transition(.move(edge: .leading).combined(with: .opacity))
                     }
-                    
                 }
-              
-                    
-                }
-          
-        
- 
+            
+                .animation(.easeInOut(duration: 0.25), value: selectedMode)
+
+                Spacer()
+            }
+            .padding(.horizontal)
             .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $searchText,  placement: .navigationBarDrawer(displayMode: .always))
-  
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             .toolbar {
-                
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        
-                        showingPopover = true
-                        isClicked.toggle()
-                        
-                    } label : {
-                        Image(systemName: "basket")
-                        
-                        
-                            .font(.title2)
-                        
-                    }
-                    .symbolEffect(.wiggle, value: isClicked)
-                    .overlay(
-                        ZStack {
-                            Circle()
-                                .stroke(Color.emeraldGreen, lineWidth: 1) //
-                                .frame(width: 15, height: 15)
-                            Text(String(foodsAdded.count)).bold()
-                            
-                                .font(.caption)
-                            
-                        },
-                        alignment: .topTrailing
-                    )
-                    
-                    
-                    .popover(isPresented: $showingPopover,  content : {
-                        
-                        // Pass the selectedDate as a Binding
-                        FoodsAddedView(foodsAdded: $foodsAdded)
-                        
-                            .frame(minWidth:300, maxHeight:400)
-                            .presentationCompactAdaptation(.popover)
-                        
-                        
-                        
-                        
-                    })
+                    basketButton
                 }
-                
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack {
-                        Button("Cancel", role: .cancel) {
-                            dismiss()
-                        }
-                        .foregroundColor(.red)
-                        
-                        Button("Done") {
-                            day.foodEntries = foodsAdded
-                            dismiss()
-                        }
-                    }
+                    actionButtons
                 }
             }
-                
-              
-            }
-          
         }
-        
-        
     }
-    
 
-    
-   
+    // MARK: - Extracted Sections
 
-  
+    private var foodListSection: some View {
+        Group {
+            if foods.isEmpty {
+                ContentUnavailableView {
+                    Label("No foods added", systemImage: "basket")
+                } description: {
+                    Text("Create a new food by tapping on New Food")
+                }
+            } else {
+                List {
+                    Section("Available Foods") {
+                    ForEach(filteredFoods, id: \.id) { food in
+                        NavigationLink(destination: FoodView(food: food, foodsAdded: $foodsAdded)) {
+                            VStack(alignment: .leading) {
+                                Text(food.name)
+                                HStack {
+                                    (Text(food.calories.formatted() + " cal")
+                                     + Text(" / \(food.servingType)"))
+                                    .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                       
+                    }
+                  }
+                }
+               
+                .scrollContentBackground(.hidden)
+               
+            }
+        }
+    }
 
+    private var basketButton: some View {
+        Button {
+            showingPopover = true
+            isClicked.toggle()
+        } label: {
+            Image(systemName: "basket")
+                .font(.title2)
+        }
+        .symbolEffect(.wiggle, value: isClicked)
+        .overlay(
+            ZStack {
+                Circle()
+                    .stroke(Color.emeraldGreen, lineWidth: 1)
+                    .frame(width: 15, height: 15)
+                Text(String(foodsAdded.count)).bold()
+                    .font(.caption)
+            },
+            alignment: .topTrailing
+        )
+        .popover(isPresented: $showingPopover) {
+            FoodsAddedView(foodsAdded: $foodsAdded)
+                .frame(minWidth: 300, maxHeight: 400)
+                .presentationCompactAdaptation(.popover)
+        }
+    }
 
+    private var actionButtons: some View {
+        HStack {
+            Button("Cancel", role: .cancel) {
+                dismiss()
+            }
+            .foregroundColor(.red)
+
+            Button("Done") {
+                day.foodEntries = foodsAdded
+                dismiss()
+            }
+        }
+    }
+}
 
 #Preview {
-
-    AddFoodView(day: Day.example)
-   
+   AddFoodView(day: Day.example)
+        .modelContainer(Food.previewContainer())
 }

@@ -14,7 +14,7 @@ struct DayView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var showingAddFoodSheet = false
     @State private var isVisible = 0
-    @State private var angle = 30.0
+
     
     var day: Day
     var body: some View {

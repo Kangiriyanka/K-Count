@@ -90,4 +90,11 @@ enum WeightValue: Equatable {
     var poundsDescription: String {
         String(format: "%.1f lbs", asPounds)
     }
+    
+    func display(for preference: MeasurementSystem) -> String {
+           switch preference {
+           case .metric: return kilogramsDescription
+           case .imperial: return poundsDescription
+           }
+       }
 }

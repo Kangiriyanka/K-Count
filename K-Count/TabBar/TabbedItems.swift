@@ -7,7 +7,7 @@
 
 import Foundation
 
-
+// Implicit Raw Values, Remember? ;)
 enum TabbedItems: Int, CaseIterable{
     case day = 0
     case analytics
@@ -21,19 +21,19 @@ enum TabbedItems: Int, CaseIterable{
         case .analytics:
             return "Progress"
         case .export:
-            return "Export"
+            return "Data"
             
         }
     }
         
-        var iconName: String{
+    var iconName: String{
             switch self {
             case .day:
                 return "list.clipboard"
             case .analytics:
-                return "chart.bar.fill"
+                return "chart.xyaxis.line"
             case .export:
-                return "square.and.arrow.up"
+                return "numbers.rectangle"
                 
             }
         }
