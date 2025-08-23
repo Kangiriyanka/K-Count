@@ -28,10 +28,10 @@ class Day {
         return String(format: "%0.1f", self.weight) 
     }
     
-    // No more hidden foodEntries hidden around
+
     @Relationship(deleteRule: .cascade) var foodEntries = [FoodEntry]()
     
-//  For exporting our data to CSV
+    
     var csvDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"

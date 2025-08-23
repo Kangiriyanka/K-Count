@@ -6,7 +6,7 @@ struct DayInfoView: View {
     var totalCalories: String
     var remainingCalories: String
     @AppStorage("userSettings") var userSettings = UserSettings()
-    @State private var scaleAmount = 1.0
+
     
     var body: some View {
         VStack {

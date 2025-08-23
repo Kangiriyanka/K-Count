@@ -104,31 +104,28 @@ extension View {
     }
     
     func limitDecimals(_ number: Binding<String>, decimalLimit: Int, prefix: Int) -> some View {
-        self.onChange(of: number.wrappedValue) { _,_ in
-            let input = number.wrappedValue
-            
-            // Remove invalid characters, keep only numbers and one decimal point
-            let filtered = input.replacingOccurrences(of: "[^0-9.]", with: "", options: .regularExpression)
-            
-            // Handle multiple decimal points
-            let components = filtered.components(separatedBy: ".")
-            var result = components[0]
-            
-            if components.count > 1 {
-                result += "." + components[1]
+        self
+            .onChange(of: number.wrappedValue) {
+                
+                
+                let cleanedInput = number.wrappedValue
+                    .replacingOccurrences(of:  "\\.{2,}", with: ".", options: .regularExpression)
+                    .replacingOccurrences(of: "^0|^\\.", with: "", options: .regularExpression)
+                    .replacingOccurrences(of: "[^0-9.]", with: "", options: .regularExpression)
+                
+                number.wrappedValue = cleanedInput
+                let components = cleanedInput.components(separatedBy: ".")
+                // No decimal
+                if components.count == 1 {
+                    number.wrappedValue = String(number.wrappedValue.prefix(prefix))
+                }
+                
+                else  {
+                    
+                    let integerPart = components[0]
+                    let totalLimit = integerPart.count + decimalLimit + 1
+                    number.wrappedValue = String(number.wrappedValue.prefix(totalLimit))
+                }
             }
-            
-            // Apply length limits
-            if result.contains(".") {
-                let parts = result.components(separatedBy: ".")
-                let integerPart = String(parts[0].prefix(prefix))
-                let decimalPart = parts.count > 1 ? String(parts[1].prefix(decimalLimit)) : ""
-                result = integerPart + (decimalPart.isEmpty ? "" : "." + decimalPart)
-            } else {
-                result = String(result.prefix(prefix))
-            }
-            
-            number.wrappedValue = result
-        }
     }
 }

@@ -99,7 +99,7 @@ struct AddFoodView: View {
         }
     }
 
-    // MARK: - Extracted Sections
+
 
     private var foodListSection: some View {
         Group {
@@ -168,9 +168,26 @@ struct AddFoodView: View {
             .foregroundColor(.red)
 
             Button("Done") {
-                day.foodEntries = foodsAdded
+                updateFoodEntries()
                 dismiss()
             }
+        }
+    }
+    // If our day doesn't contain the food entry, add it
+    // Otherwise, update the portions
+    private func updateFoodEntries() {
+        
+        
+        for entry in foodsAdded {
+            if !day.foodEntries.contains(where: {$0.food.name == entry.food.name}) {
+    
+                day.foodEntries.append(entry)
+            }
+            else {
+                
+                day.foodEntries.first(where: {$0.food.name == entry.food.name})?.servingSize = entry.servingSize
+            }
+            
         }
     }
 }

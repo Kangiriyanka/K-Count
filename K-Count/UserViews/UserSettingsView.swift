@@ -16,7 +16,26 @@ struct UserSettingsView: View {
     @State private var errorMessage = ""
     @State private var showError = false
     @State private var showHeightView = false
-    @State private var hasPickedHeight = false
+    @State private var showWeightView = false
+    
+    var heightText: String {
+        let height = HeightValue.metric(editableSettings.height)
+        if editableSettings.heightPreference == .metric {
+            return height.centimetersDescription
+        } else {
+            return height.feetInchesDescription
+        }
+    }
+    
+    var weightText: String {
+        let weight = WeightValue.metric(editableSettings.weight)
+        if editableSettings.weightPreference == .metric {
+            return weight.kilogramsDescription
+        } else {
+            return weight.poundsDescription
+        }
+    }
+ 
     
     @Environment(\.dismiss) private var dismiss
     
@@ -50,13 +69,46 @@ struct UserSettingsView: View {
                     HStack {
                         Text("Height")
                         Spacer()
-                        Text(HeightValue.metric(editableSettings.height).centimetersDescription)
+                        Text(heightText)
                     }
+                    .onTapGesture {
+                        showHeightView.toggle()
+                    }
+                    .sheet(isPresented: $showHeightView) {
+                        CustomHeightPicker(
+                            preference: $editableSettings.heightPreference,
+                            height: .init(
+                                
+                                get: {HeightValue.metric(editableSettings.height)},
+                                set: { newValue in editableSettings.height = newValue.asCentimeters}
+                            )
+                            
+                            
+                        )
+                        .presentationDetents([.fraction(0.40)])
+                    }
+                  
                     
                     HStack {
                         Text("Weight")
                         Spacer()
-                        Text(WeightValue.metric(editableSettings.weight).kilogramsDescription)
+                        Text(weightText)
+                    }
+                    .onTapGesture {
+                        showWeightView.toggle()
+                    }
+                    .sheet(isPresented: $showWeightView) {
+                        CustomWeightPicker(
+                            preference: $editableSettings.weightPreference,
+                            weight: .init(
+                                
+                                get: {WeightValue.metric(editableSettings.weight)},
+                                set: { newValue in editableSettings.weight = newValue.asKilograms}
+                            )
+                            
+                            
+                        )
+                        .presentationDetents([.fraction(0.40)])
                     }
                     
                     Picker("Sex assigned at birth", selection: $editableSettings.sex) {
@@ -91,7 +143,7 @@ struct UserSettingsView: View {
             } message: {
                 Text(errorMessage)
             }
-            .navigationTitle("User Information")
+            .navigationTitle("\(userSettings.name)'s Information")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
              
@@ -102,14 +154,18 @@ struct UserSettingsView: View {
     
     private func loadCurrentSettings() {
         editableSettings = userSettings
+        
     }
     
     private func saveChanges() {
         userSettings = editableSettings
+        
+  
+        
     }
     
     private func validateUserDetails() -> Bool {
-        if editableSettings.name.count < 2 {
+        if editableSettings.name.count < 3 {
             inputError(title: "Invalid Name", message: "Please enter 2 or more characters")
             return false
         }

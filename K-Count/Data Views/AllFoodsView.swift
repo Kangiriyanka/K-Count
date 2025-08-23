@@ -6,13 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct AllFoodsView: View {
     
     @Environment(\.modelContext) var modelContext
     @State private var isPresentingConfirm: Bool = false
     @State private var searchText = ""
-    @State private var existingFoods: [Food] = []
+    @Query var existingFoods: [Food]
     @State private var selectedSortOption: SortOption = .name
     
     enum SortOrder {
@@ -59,7 +60,7 @@ struct AllFoodsView: View {
                             Text("\(String(format: "%0.1f", food.calories)) ").foregroundStyle(.secondary)
                         }
                     }
-//                    .onDelete(perform: deleteFoodPermanently)
+
                 }
             }
             
@@ -67,9 +68,7 @@ struct AllFoodsView: View {
             .searchable(text: $searchText , placement: .navigationBarDrawer(displayMode: .always))
             
         }
-        .onAppear {
-//            loadFoods()
-        }
+
       
         .toolbar {
             
@@ -79,7 +78,7 @@ struct AllFoodsView: View {
             .confirmationDialog("Are you sure?",
                                 isPresented: $isPresentingConfirm) {
                 Button("Would you like to clear all foods?", role: .destructive) {
-//                    clearFoods()
+
                 }
             }
             

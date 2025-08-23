@@ -18,7 +18,6 @@ struct FoodView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var foodsAdded: [FoodEntry]
     
-    
     var body: some View {
         
         NavigationStack {
@@ -66,14 +65,8 @@ struct FoodView: View {
                     HStack {
                         Spacer()
                         Button {
-                            
-                          
-                            foodsAdded.append(
-                        
-                                    FoodEntry(food: food, servingSize: Double(servingSize) ?? 1)
-                            
-                            )
-                        
+                           updateFoodEntries()
+                           
                             dismiss()
                             
                             
@@ -104,6 +97,8 @@ struct FoodView: View {
         }
      
         .padding()
+        
+        
    
         
 
@@ -112,15 +107,31 @@ struct FoodView: View {
 
       
     }
+    // If the food is already in the FoodEntries, just update the portions
+    // Otherwise create a new FoodEntry
+    private func updateFoodEntries() {
+        
+        
+        if foodsAdded.contains(where: {$0.food.name == food.name})  {
+            foodsAdded.first(where: {$0.food.name == food.name})?.servingSize = Double(servingSize) ?? 1
+            
+        } else {
+            
+            foodsAdded.append(
+        
+                    FoodEntry(food: food, servingSize: Double(servingSize) ?? 1)
+            
+            )
+        }
+        
+        
+    }
+
     
     init(food: Food, foodsAdded: Binding<[FoodEntry]>) {
-        
         self.food = food
         self._foodsAdded = foodsAdded
         self.totalCalories = food.calories
-        
-      
-       
         
     }
 }

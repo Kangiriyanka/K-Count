@@ -90,14 +90,7 @@ struct AllDaysView: View {
                             }
                         }
                         
-                        Section("Order") {
-                            Picker("Sort Order", selection: $sortOrder) {
-                                Label("Newest First", systemImage: "arrow.down")
-                                    .tag(SortOrder.descending)
-                                Label("Oldest First", systemImage: "arrow.up")
-                                    .tag(SortOrder.ascending)
-                            }
-                        }
+                   
                         
                         Divider()
                         
@@ -136,7 +129,7 @@ struct AllDaysView: View {
     }
 }
 
-// Extension for day of week formatting
+
 extension DateFormatter {
     static let dayOfWeek: DateFormatter = {
         let formatter = DateFormatter()

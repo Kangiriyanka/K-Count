@@ -25,22 +25,12 @@ struct EditCurrentWeightView: View {
                         TextField("0.0", text: $weightInput)
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
+                        
                             .focused($isWeightFocused)
-                            .onChange(of: weightInput) { oldValue, newValue in
-                                // Limit input to reasonable format
-                                let filtered = newValue.filter { "0123456789.".contains($0) }
-                                if filtered != newValue {
-                                    weightInput = filtered
-                                }
-                                
-                                // Limit to one decimal point and reasonable length
-                                let components = filtered.components(separatedBy: ".")
-                                if components.count > 2 {
-                                    weightInput = oldValue
-                                } else if components.count == 2 && components[1].count > 1 {
-                                    weightInput = components[0] + "." + String(components[1].prefix(1))
-                                } else if components[0].count > 4 {
-                                    weightInput = String(components[0].prefix(4)) + (components.count > 1 ? "." + components[1] : "")
+                            .limitDecimals($weightInput, decimalLimit: 1, prefix: 3)
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    isWeightFocused = true
                                 }
                             }
                         
@@ -55,7 +45,7 @@ struct EditCurrentWeightView: View {
                         .font(.caption)
                 }
             }
-            .navigationTitle("Add Weight")
+            .navigationTitle("Change Weight")
             .navigationBarTitleDisplayMode(.inline)
             .scrollDismissesKeyboard(.interactively)
             .alert(errorTitle, isPresented: $showingError) {
@@ -80,8 +70,9 @@ struct EditCurrentWeightView: View {
         }
     }
     
+    // Display the weight (lbs, kg) inside userSettings as a String.
     private func setupInitialWeight() {
-        let initialWeight = day.weight > 0 ? day.weight : 0.0
+        let initialWeight = day.weight > 0 ? day.weight : userSettings.weight
         
         if initialWeight > 0 {
             // Convert to display units if needed
@@ -123,8 +114,10 @@ struct EditCurrentWeightView: View {
         day.weight = weightInKg
 
         // Update user's current weight if this is today's entry
-        let todayString = DateFormatter.localizedString(from: Date(), dateStyle: .long, timeStyle: .none)
-        if day.formattedDate == todayString {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d, yyy"
+        let today = formatter.string(from: Date.now)
+        if day.formattedDate == today {
             userSettings.weight = weightInKg
         }
 

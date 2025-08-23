@@ -8,35 +8,31 @@
 import SwiftUI
 import SwiftData
 
-//Discussion points: Normalizing the date was required to find the matching day. If I had not normalized the date, the matching day function would have never found matches since the dates are time-sensitive.
-
-// DaysView shows a day based on a date selected in our CustomCalendarView
-// modelContext is necessary for creating a day and adding it to our Model data.
-// We use the person's TDEE to calculate the remaining calories of the DayView
-// This changes based on the person's weight
-
 struct LogView: View {
     
     
     @Environment(\.modelContext) var modelContext
    
-    
-    private var calendar: Calendar
+ 
     @State private var selectedDate: Date
     @State private var matchingDay: Day?
     @State private var showingPopover  = false
     @Query var days : [Day]
     
     
+    private var calendar: Calendar
+    private var currentDay: Day {
+        matchingDay ?? Day.emptyDay
+    }
+    
+    
     var body: some View {
         
-        // The toolbar contains a Toolbar button that pops a calendar for the user to select a date
+    
         NavigationStack {
             
-            
-            // Render a day view if a matching day is found.
         
-            DayView(day: matchingDay ?? Day.emptyDay)
+            DayView(day: currentDay)
                 .onAppear(perform: findMatchingDay)
                 .onChange(of: selectedDate) {findMatchingDay()}
                 .toolbar {
@@ -63,7 +59,7 @@ struct LogView: View {
     
     // Find the matching day based on the selected date
     // If there is no matching day, the addDay function will create a day and add it to the Day model
-    func findMatchingDay() {
+    private func findMatchingDay() {
         
         if let match = days.first(where: { $0.date == selectedDate }) {
             matchingDay = match
@@ -73,9 +69,8 @@ struct LogView: View {
     }
     
     
-    // Creates an empty day
-  
-    func addDay(_ newDate: Date ) {
+    // Creates a day 
+    private func addDay(_ newDate: Date ) {
         
         
         guard let normalizedDate = normalizedDate(from: newDate) else {
@@ -92,7 +87,7 @@ struct LogView: View {
     }
     
     // The normalized date only contains the year, month and day. The time is excluded.
-    func normalizedDate(from date: Date) -> Date? {
+    private func normalizedDate(from date: Date) -> Date? {
         let components = calendar.dateComponents([.year, .month, .day], from: date)
         return calendar.date(from: components)
     }
@@ -108,7 +103,7 @@ struct LogView: View {
         }
         self.selectedDate = normalizedDate
         self.calendar = calendar
-        self.selectedDate = normalizedDate
+      
         
         
     }

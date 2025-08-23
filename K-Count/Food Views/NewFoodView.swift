@@ -37,7 +37,6 @@ struct NewFoodView: View {
                 .buttonStyle(AddButton())
                 .frame(maxWidth: .infinity)
                 .listRowBackground(EmptyView())
-                // Disable the add button if one of the fields isn't filled.
                 .disabled(!areFieldsFilled())
                 .alert("Food already exists", isPresented: $duplicateFoodPresented) { }
             }
@@ -72,7 +71,7 @@ struct NewFoodView: View {
     }
 }
 
-// MARK: - Preview
+
 #Preview {
     NavigationStack {
         NewFoodView(foodsAdded: .constant([]))

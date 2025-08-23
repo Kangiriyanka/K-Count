@@ -34,7 +34,6 @@ enum HeightValue: Equatable, Hashable{
             }
     }
     
-
     var asCentimeters: Double {
         switch self {
         case .metric(let value): return value
@@ -61,8 +60,6 @@ enum HeightValue: Equatable, Hashable{
     var feetInchesDescription: String {
         "\(asFeetInches.foot)' \(asFeetInches.inches)''"
     }
-    
-    
 }
 
 enum WeightValue: Equatable {

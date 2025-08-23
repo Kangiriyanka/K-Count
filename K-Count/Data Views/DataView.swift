@@ -60,7 +60,7 @@ struct DataView: View {
         }
     }
     
-    func exportDays(_ days: [Day]) -> Void {
+    private func exportDays(_ days: [Day]) -> Void {
         let fileManager = FileManager.default
         var csvString = "Date,Weight (kg),Total Calories, Food Log\n"
         
