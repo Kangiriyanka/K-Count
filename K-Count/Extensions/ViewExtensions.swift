@@ -16,8 +16,9 @@ struct DataCard: ViewModifier {
             .frame(maxWidth: .infinity, minHeight: 50)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .font(.body.weight(.medium))
-            .foregroundStyle(.white)
+            .fontWeight(.semibold)
+            .foregroundStyle(.black
+            )
             .background(Color.burntOrange.opacity(0.8), in: RoundedRectangle(cornerRadius: 12))
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.burntOrange.opacity(0.3)))
             .shadow(color: Color.burntOrange.opacity(0.3), radius: 3)

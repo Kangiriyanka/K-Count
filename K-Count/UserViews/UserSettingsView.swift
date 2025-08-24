@@ -130,12 +130,13 @@ struct UserSettingsView: View {
                
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save",systemImage: "checkmark.circle") {
+                    Button("Save") {
                         if validateUserDetails() {
                             saveChanges()
                             dismiss()
                         }
                     }
+                    .fontWeight(.semibold)
                 }
             }
             .alert(errorTitle, isPresented: $showError) {

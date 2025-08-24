@@ -94,7 +94,7 @@ struct AllDaysView: View {
                         
                         Divider()
                         
-                        Button("Clear All Days", systemImage: "trash", role: .destructive) {
+                        Button("Delete All Days", systemImage: "trash", role: .destructive) {
                             isPresentingConfirm = true
                         }
                     } label: {
@@ -102,7 +102,7 @@ struct AllDaysView: View {
                     }
                 }
             }
-            .confirmationDialog("Clear All Days", isPresented: $isPresentingConfirm, titleVisibility: .visible) {
+            .confirmationDialog("Delete All Days", isPresented: $isPresentingConfirm, titleVisibility: .visible) {
                 Button("Delete All Days", role: .destructive) {
                     clearDays()
                 }

@@ -26,8 +26,8 @@ struct AllFoodsView: View {
     var filteredFoods: [Food] {
         
         let filtered = searchText.isEmpty
-                ? existingFoods
-                : existingFoods.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        ? existingFoods
+        : existingFoods.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         switch selectedSortOption {
         case .name:
             return filtered.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
@@ -36,8 +36,8 @@ struct AllFoodsView: View {
         }
         
         
-        }
-   
+    }
+    
     var body: some View {
         NavigationStack {
             
@@ -60,7 +60,7 @@ struct AllFoodsView: View {
                             Text("\(String(format: "%0.1f", food.calories)) ").foregroundStyle(.secondary)
                         }
                     }
-
+                    
                 }
             }
             
@@ -68,38 +68,67 @@ struct AllFoodsView: View {
             .searchable(text: $searchText , placement: .navigationBarDrawer(displayMode: .always))
             
         }
-
-      
+        
+        
         .toolbar {
-            
-            Button("Clear Foods",   systemImage: "trash", role: .destructive) {
-                isPresentingConfirm = true
-            }
-            .confirmationDialog("Are you sure?",
-                                isPresented: $isPresentingConfirm) {
-                Button("Would you like to clear all foods?", role: .destructive) {
-
+            ToolbarItem(placement: .navigationBarTrailing) {
+                
+                Menu {
+                    Picker("Sort", selection: $selectedSortOption) {
+                        Label("Name", systemImage: "bookmark").tag(SortOption.name)
+                        Label("Calories", systemImage: "chart.bar").tag(SortOption.calories)
+                    }
+                    
+                    
+                    
+                    Divider()
+                    
+                    Button("Delete All Foods",   systemImage: "trash", role: .destructive) {
+                        isPresentingConfirm = true
+                    }
+                    
+                    
+                } label: {
+                    Image(systemName: "ellipsis.circle")
                 }
             }
             
-            Menu("Sort", systemImage: "arrow.up.arrow.down") {
-                Picker("Sort", selection: $selectedSortOption) {
-                    Text("Sort by Name").tag(SortOption.name)
-                    Text("Sort by Calories").tag(SortOption.calories)
-                }
+            
+            
+            
+            
+        }
+        
+        .confirmationDialog("Delete All Foods",
+                            isPresented: $isPresentingConfirm) {
+            Button("Would you like to clear all foods?", role: .destructive) {
+                
+                clearFoods()
+                
             }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This will permanently delete all your food entries. This action cannot be undone.")
         }
     }
     
     
- 
-
+    func clearFoods() {
+        
+        do {
+            try modelContext.delete(model: Food.self)
+        } catch {
+            print("Failed to delete foods: \(error)")
+        }
+        
+        
+    }
     
-
-
+    
+    
     
 }
-        
-    
+
+
 
 

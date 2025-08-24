@@ -52,6 +52,7 @@ struct DataView: View {
                             Text("User Settings")
                         }
                         .dataCardStyle()
+                      
                     }
                 }
                 .padding(.horizontal)
