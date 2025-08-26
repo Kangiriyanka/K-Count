@@ -84,14 +84,30 @@ enum WeightValue: Equatable {
         String(format: "%.1f kg", asKilograms)
     }
     
+    var kilogramsDescriptionShort: String {
+        String(format: "%.1f", asKilograms)
+    }
+    
     var poundsDescription: String {
         String(format: "%.1f lbs", asPounds)
     }
+    
+    var poundsDescriptionShort: String {
+        String(format: "%.1f", asPounds)
+    }
+    
     
     func display(for preference: MeasurementSystem) -> String {
            switch preference {
            case .metric: return kilogramsDescription
            case .imperial: return poundsDescription
+           }
+       }
+    
+    func graphDisplay(for preference: MeasurementSystem) -> String {
+           switch preference {
+           case .metric: return kilogramsDescriptionShort
+           case .imperial: return poundsDescriptionShort
            }
        }
 }

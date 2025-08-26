@@ -57,7 +57,7 @@ struct ProgressView: View {
                         Spacer()
                     }
                 }
-                .toolbar { }
+              
                 .navigationBarTitle("Progress", displayMode: .inline)
             }
         }
@@ -66,4 +66,5 @@ struct ProgressView: View {
 
 #Preview {
     ProgressView()
+        .modelContainer(Day.previewContainer())
 }
