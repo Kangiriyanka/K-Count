@@ -14,16 +14,33 @@ struct AllDaysView: View {
     @AppStorage("userSettings") var userSettings = UserSettings()
     @State private var isPresentingConfirm: Bool = false
     @State private var searchText = ""
-    @State private var selectedSortOption: SortOption = .date
-    @State private var sortOrder: SortOrder = .descending
+    @State private var selectedSortOption: SortOption = .dateDescending
     @Query var days: [Day]
     
-    enum SortOrder {
-        case ascending, descending
-    }
-    
-    enum SortOption {
-        case date, weight
+    enum SortOption: CaseIterable {
+        case dateAscending, dateDescending, weightAscending, weightDescending
+        
+        var displayName: String {
+            switch self {
+            case .dateAscending:
+                return "Date Oldest First"
+            case .dateDescending:
+                return "Date Newest First"
+            case .weightAscending:
+                return "Weight Low-High"
+            case .weightDescending:
+                return "Weight High-Low"
+            }
+        }
+        
+        var systemImage: String {
+            switch self {
+            case .dateAscending, .dateDescending:
+                return "calendar"
+            case .weightAscending, .weightDescending:
+                return "scalemass"
+            }
+        }
     }
     
     // Filter and sort days
@@ -33,14 +50,14 @@ struct AllDaysView: View {
             : days.filter { $0.weight > 0.0 && $0.formattedDate.localizedCaseInsensitiveContains(searchText) }
         
         switch selectedSortOption {
-        case .weight:
-            return sortOrder == .descending
-                ? filtered.sorted { $0.weight > $1.weight }
-                : filtered.sorted { $0.weight < $1.weight }
-        case .date:
-            return sortOrder == .descending
-                ? filtered.sorted { $0.date > $1.date }
-                : filtered.sorted { $0.date < $1.date }
+        case .dateAscending:
+            return filtered.sorted { $0.date < $1.date }
+        case .dateDescending:
+            return filtered.sorted { $0.date > $1.date }
+        case .weightAscending:
+            return filtered.sorted { $0.weight < $1.weight }
+        case .weightDescending:
+            return filtered.sorted { $0.weight > $1.weight }
         }
     }
     
@@ -74,23 +91,19 @@ struct AllDaysView: View {
                         .opacity(0)
                     )
                 }
-                .onDelete(perform: deleteDayPermanently)
+              
             }
             .navigationTitle("All Days")
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
-                        Section("Sort By") {
-                            Picker("Sort Option", selection: $selectedSortOption) {
-                                Label("Date", systemImage: "calendar")
-                                    .tag(SortOption.date)
-                                Label("Weight", systemImage: "scalemass")
-                                    .tag(SortOption.weight)
+                        Picker("Sort", selection: $selectedSortOption) {
+                            ForEach(SortOption.allCases, id: \.self) { option in
+                                Label(option.displayName, systemImage: option.systemImage)
+                                    .tag(option)
                             }
                         }
-                        
-                   
                         
                         Divider()
                         

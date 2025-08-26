@@ -98,13 +98,6 @@ struct FoodView: View {
      
         .padding()
         
-        
-   
-        
-
-    
-    
-
       
     }
     // If the food is already in the FoodEntries, just update the portions
