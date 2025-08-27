@@ -8,13 +8,24 @@
 import SwiftUI
 import SwiftData
 
+enum ExportFormat: String, CaseIterable {
+    case csv
+    case json
+}
+
 struct AllDaysView: View {
     
     @Environment(\.modelContext) var modelContext
     @AppStorage("userSettings") var userSettings = UserSettings()
     @State private var isPresentingConfirm: Bool = false
     @State private var searchText = ""
+    @State private var exportFileURL: URL? = nil
+    @State private var isExporting: Bool = false
     @State private var selectedSortOption: SortOption = .dateDescending
+    @State private var selectedFormat: ExportFormat = .csv
+    @State private var errorMessage: String? = nil
+    @State private var showError = false
+    
     @Query var days: [Day]
     
     enum SortOption: CaseIterable {
@@ -27,20 +38,13 @@ struct AllDaysView: View {
             case .dateDescending:
                 return "Date Newest First"
             case .weightAscending:
-                return "Weight Low-High"
+                return "Weight Highest First"
             case .weightDescending:
-                return "Weight High-Low"
+                return "Weight Lowest First"
             }
         }
         
-        var systemImage: String {
-            switch self {
-            case .dateAscending, .dateDescending:
-                return "calendar"
-            case .weightAscending, .weightDescending:
-                return "scalemass"
-            }
-        }
+     
     }
     
     // Filter and sort days
@@ -93,53 +97,71 @@ struct AllDaysView: View {
                 }
               
             }
+            .alert("Error", isPresented: $showError) {
+                       Button("OK", role: .cancel) { }
+                   } message: {
+                       Text(errorMessage ?? "Unknown error")
+                   }
             .navigationTitle("All Days")
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup {
+                    
+             
                     Menu {
-                        Picker("Sort", selection: $selectedSortOption) {
-                            ForEach(SortOption.allCases, id: \.self) { option in
-                                Label(option.displayName, systemImage: option.systemImage)
-                                    .tag(option)
+                        Picker("Format", selection: $selectedFormat) {
+                            ForEach(ExportFormat.allCases, id: \.self) { format in
+                                Text(format.rawValue)
+                                    .tag(format)
                             }
                         }
-                        
-                        Divider()
-                        
-                        Button("Delete All Days", systemImage: "trash", role: .destructive) {
-                            isPresentingConfirm = true
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
+                    } label : {
+                        Text("Export")
+                            .fontWeight(.medium)
                     }
-                }
+                    
+                 
+                        
+                    Menu {
+                               Menu {
+                                   ForEach([SortOption.dateDescending, SortOption.dateAscending], id: \.self) { option in
+                                       Button(action: { selectedSortOption = option }) {
+                                           Label(option.displayName, systemImage: selectedSortOption == option ? "checkmark" : "")
+                                       }
+                                   }
+                               } label: {
+                                   HStack(spacing:0) {
+                                       Text("Date")
+                                       Image(systemName: "calendar")
+                                   }
+                               }
+                               
+                               Menu {
+                                   ForEach([SortOption.weightDescending, SortOption.weightAscending], id: \.self) { option in
+                                       Button(action: { selectedSortOption = option }) {
+                                           Label(option.displayName, systemImage: selectedSortOption == option ? "checkmark" : "")
+                                       }
+                                   }
+                               } label: {
+                                   HStack {
+                                       Image(systemName: "scalemass")
+                                       Text("Weight")
+                                       
+                                   }
+                               }
+                               
+                          
+                           } label: {
+                               Image(systemName: "ellipsis.circle")
+                           }
+                    }
+                
             }
-            .confirmationDialog("Delete All Days", isPresented: $isPresentingConfirm, titleVisibility: .visible) {
-                Button("Delete All Days", role: .destructive) {
-                    clearDays()
-                }
-                Button("Cancel", role: .cancel) { }
-            } message: {
-                Text("This will permanently delete all your weight entries. This action cannot be undone.")
-            }
+          
         }
     }
     
-    func deleteDayPermanently(offsets: IndexSet) {
-        for i in offsets {
-            let day = filteredDays[i] // Use filteredDays instead of days
-            modelContext.delete(day)
-        }
-    }
     
-    func clearDays() {
-        do {
-            try modelContext.delete(model: Day.self)
-        } catch {
-            print("Failed to delete days: \(error)")
-        }
-    }
 }
 
 
@@ -150,6 +172,40 @@ extension DateFormatter {
         return formatter
     }()
 }
+
+private func exportDays(format: ExportFormat, _ days: [Day]) -> Void {
+    let fileManager = FileManager.default
+
+    switch format {
+        case .csv:
+        
+        var csvString = "Date,Weight (kg),Total Calories, Food Log\n"
+        for day in days {
+            if day.weight != 0 {
+                let row = "\(day.csvDate),\(day.weight),\(day.totalCalories), \(day.foodsEatentoCSV)\n"
+                csvString.append(row)
+            }
+        }
+        
+            
+        case .json:
+            
+            var jsonData: [[String: Any]] = []
+            
+            for day in days {
+                if day.weight != 0 {
+                    var jsonObject: [String: Any] = [:]
+                    jsonObject["Date"] = day.csvDate
+                    jsonObject["Weight (kg)"] = day.weight
+                    jsonObject["Total Calories"] = day.totalCalories
+                }
+            }
+        
+        
+    }
+   
+    }
+
 
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)

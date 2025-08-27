@@ -14,7 +14,7 @@ struct AllFoodsView: View {
     @State private var isPresentingConfirm: Bool = false
     @State private var searchText = ""
     @Query var existingFoods: [Food]
-    @State private var selectedSortOption: SortOption = .nameAscending
+    @State private var selectedSortOption: SortOption = .nameDescending
     
     enum SortOption: CaseIterable {
         case nameAscending, nameDescending, caloriesAscending, caloriesDescending
@@ -26,9 +26,9 @@ struct AllFoodsView: View {
             case .nameDescending:
                 return "Name Z-A"
             case .caloriesAscending:
-                return "Calories Low-High"
+                return "Low Calories"
             case .caloriesDescending:
-                return "Calories High-Low"
+                return "High Calories"
             }
         }
         
@@ -79,18 +79,25 @@ struct AllFoodsView: View {
                     
                     ForEach(filteredFoods, id: \.self) { food in
                         HStack {
-                            Text(food.name)
+                            VStack(alignment:.leading){
+                                Text(food.name)
+                                Text("per " + food.servingType)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                
+                            }
+                            
                             Spacer()
                             Text("\(String(format: "%0.1f", food.calories)) ")
-                             
-                                .fontWeight(.medium)
+                            
+                                .foregroundStyle(.secondary)
                         }
                         .contentShape(Rectangle())
                         .overlay(
                             NavigationLink(destination: EditFoodView(food: food)) {
                                 EmptyView()
                             }
-                            .opacity(0)
+                                .opacity(0)
                         )
                     }
                     
@@ -99,49 +106,47 @@ struct AllFoodsView: View {
             
             .navigationTitle("All Foods")
             .searchable(text: $searchText , placement: .navigationBarDrawer(displayMode: .always))
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    
+                    Menu {
+                        Menu {
+                            ForEach([SortOption.nameDescending, SortOption.nameAscending], id: \.self) { option in
+                                Button(action: { selectedSortOption = option }) {
+                                    Label(option.displayName, systemImage: selectedSortOption == option ? "checkmark" : "")
+                                }
+                            }
+                        } label: {
+                            HStack(spacing:0) {
+                                Text("Name")
+                                Image(systemName: "calendar")
+                            }
+                        }
+                        
+                        
+                        Menu {
+                            ForEach([SortOption.caloriesDescending, SortOption.caloriesAscending], id: \.self) { option in
+                                
+                                Button(action: {selectedSortOption = option}) {
+                                    Label(option.displayName, systemImage: selectedSortOption == option ? "checkmark" : "")
+                                }
+                            }
+                        } label: {
+                            HStack(spacing:0) {
+                                Text("Calories")
+                                Image(systemName: "fork.knife")
+                            }
+                        }
+                        
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+                }
+            }
             
         }
         
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                
-                Menu {
-                    Picker("Sort", selection: $selectedSortOption) {
-                        ForEach(SortOption.allCases, id: \.self) { option in
-                            Label(option.displayName, systemImage: option.systemImage)
-                                .tag(option)
-                        }
-                    }
-                    
-                    Divider()
-                    
-                    Button("Delete All Foods", systemImage: "trash", role: .destructive) {
-                        isPresentingConfirm = true
-                    }
-                    
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                }
-            }
-        }
         
-        .confirmationDialog("Delete All Foods",
-                            isPresented: $isPresentingConfirm) {
-            Button("Would you like to clear all foods?", role: .destructive) {
-                clearFoods()
-            }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("This will permanently delete all your food entries. This action cannot be undone.")
-        }
-    }
-    
-    func clearFoods() {
-        do {
-            try modelContext.delete(model: Food.self)
-        } catch {
-            print("Failed to delete foods: \(error)")
-        }
     }
 }
 

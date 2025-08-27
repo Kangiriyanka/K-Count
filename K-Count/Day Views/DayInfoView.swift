@@ -6,7 +6,14 @@ struct DayInfoView: View {
     var totalCalories: String
     var remainingCalories: String
     @AppStorage("userSettings") var userSettings = UserSettings()
-
+    private var dayWeight: String {
+        let weightValue = WeightValue.metric(day.weight)
+        return weightValue.display(for: userSettings.weightPreference)
+    }
+    private var userWeight: String {
+        let weightValue = WeightValue.metric(userSettings.weight)
+        return weightValue.display(for: userSettings.weightPreference)
+    }
     
     var body: some View {
         VStack {
@@ -24,8 +31,8 @@ struct DayInfoView: View {
                                         .opacity(0)
                                 )
                         } else {
-                            let weightValue = WeightValue.metric(day.weight)
-                            Text(weightValue.display(for: userSettings.weightPreference))
+                        
+                            Text(dayWeight)
                                 .bold()
                                 .overlay(
                                     NavigationLink(destination: EditCurrentWeightView(day: day), label: {})

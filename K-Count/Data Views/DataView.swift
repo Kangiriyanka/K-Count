@@ -11,45 +11,33 @@ import SwiftData
 struct DataView: View {
     
     @Query(sort: \Day.date, order: .reverse) var days: [Day]
-    @State private var exportFileURL: URL? = nil
+  
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
                     
-                    Button(action: {
-                        exportDays(days)
-                    }) {
-                        VStack {
-                            Text("Export CSV")
-                            if let url = exportFileURL {
-                                ShareLink(item: url) {
-                                    Label("Share", systemImage: "square.and.arrow.up")
-                                }
-                            }
-                        }
-                        .contentShape(Rectangle())
-                        .dataCardStyle()
-                    }
-                    
                     NavigationLink(destination: AllFoodsView()) {
-                        VStack {
-                            Text("Foods Data")
+                        HStack(spacing: 6){
+                            Image(systemName: "fork.knife")
+                            Text("My Foods")
                         }
                         .dataCardStyle()
                     }
                     
                     NavigationLink(destination: AllDaysView()) {
-                        VStack {
+                        HStack(spacing: 6) {
+                            Image(systemName: "list.clipboard")
                             Text("Days Data")
                         }
                         .dataCardStyle()
                     }
                     
                     NavigationLink(destination: UserSettingsView()) {
-                        VStack {
-                            Text("User Settings")
+                        HStack(spacing: 6) {
+                            Image(systemName: "person.fill")
+                            Text("User Preferences")
                         }
                         .dataCardStyle()
                       
@@ -61,27 +49,9 @@ struct DataView: View {
         }
     }
     
-    private func exportDays(_ days: [Day]) -> Void {
-        let fileManager = FileManager.default
-        var csvString = "Date,Weight (kg),Total Calories, Food Log\n"
-        
-        for day in days {
-            if day.weight != 0 {
-                let row = "\(day.csvDate),\(day.weight),\(day.totalCalories), \(day.foodsEatentoCSV)\n"
-                csvString.append(row)
-            }
-        }
-        
-        if let URL = fileManager.saveCSVFile(csvString: csvString) {
-            exportFileURL = URL
-        }
-    }
+
 }
 
 #Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Day.self, configurations: config)
-    container.mainContext.insert(Day.example)
-    return DataView()
-        .modelContainer(container)
+    return DataView().modelContainer(Day.previewContainer())
 }

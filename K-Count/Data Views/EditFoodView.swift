@@ -36,7 +36,7 @@ struct EditFoodView: View {
             }
             
             .listRowBackground(Color.clear)
-            .scrollContentBackground(.hidden) // hides the default background
+            .scrollContentBackground(.hidden) 
             
             .toolbar {
               

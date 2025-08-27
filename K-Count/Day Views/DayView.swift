@@ -15,7 +15,7 @@ struct DayView: View {
     @State private var showingAddFoodSheet = false
     @State private var isVisible = 0
 
-    
+
     var day: Day
     var body: some View {
         
@@ -28,7 +28,7 @@ struct DayView: View {
                     DayInfoView(
                         day: day,
                         totalCalories: String(format: "%0.f", day.totalCalories),
-                        remainingCalories: String(format: "%0.f", userSettings.calculateTDEE(using: day.weight) - day.totalCalories)
+                        remainingCalories: String(format: "%0.f", userSettings.calculateTDEE(using: userSettings.weight) - day.totalCalories)
                     )
                     .borderedBackground( Color.burntOrange)
 

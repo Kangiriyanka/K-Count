@@ -120,7 +120,6 @@ struct FoodView: View {
         
     }
 
-    
     init(food: Food, foodsAdded: Binding<[FoodEntry]>) {
         self.food = food
         self._foodsAdded = foodsAdded
