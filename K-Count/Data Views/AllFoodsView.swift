@@ -139,7 +139,7 @@ struct AllFoodsView: View {
                         }
                         
                     } label: {
-                        Image(systemName: "ellipsis.circle")
+                        Image(systemName: "arrow.up.arrow.down")
                     }
                 }
             }

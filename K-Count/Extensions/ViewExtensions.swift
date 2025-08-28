@@ -8,6 +8,15 @@
 import Foundation
 import SwiftUI
 
+
+extension DateFormatter {
+    static let dayOfWeek: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        return formatter
+    }()
+}
+
 // MARK: - Card Modifiers
 
 struct DataCard: ViewModifier {

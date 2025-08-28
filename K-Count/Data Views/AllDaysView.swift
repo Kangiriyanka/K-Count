@@ -102,21 +102,41 @@ struct AllDaysView: View {
                    } message: {
                        Text(errorMessage ?? "Unknown error")
                    }
+                   
             .navigationTitle("All Days")
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
+            .sheet(isPresented: $isExporting) {
+                
+                if let url = exportFileURL {
+                       ExportView(url: url)
+                        .presentationDetents([.fraction(0.20)])
+                    
+                   }
+                
+                
+                
+              
+            }
+          
             .toolbar {
                 ToolbarItemGroup {
                     
              
                     Menu {
+                  
                         Picker("Format", selection: $selectedFormat) {
                             ForEach(ExportFormat.allCases, id: \.self) { format in
                                 Text(format.rawValue)
                                     .tag(format)
                             }
                         }
+                        Divider()
+                        Button("Export") {
+                            exportDays(format: selectedFormat, filteredDays)
+                        }
+                        .fontWeight(.bold)
                     } label : {
-                        Text("Export")
+                        Image(systemName: "square.and.arrow.up")
                             .fontWeight(.medium)
                     }
                     
@@ -152,7 +172,7 @@ struct AllDaysView: View {
                                
                           
                            } label: {
-                               Image(systemName: "ellipsis.circle")
+                               Image(systemName: "arrow.up.arrow.down")
                            }
                     }
                 
@@ -162,49 +182,66 @@ struct AllDaysView: View {
     }
     
     
+    
+    
+    func exportDays(format: ExportFormat, _ days: [Day]) -> Void {
+       let fileManager = FileManager.default
+     
+
+       switch format {
+           case .csv:
+           
+           var csvString = "Date,Weight (kg),Total Calories, Food Log\n"
+           for day in days {
+               if day.weight != 0 {
+                   let row = "\(day.csvDate),\(day.weight),\(day.totalCalories), \(day.foodsEatentoCSV)\n"
+                   csvString.append(row)
+               }
+           }
+           
+           if let URL = fileManager.saveCSVFile(csvString: csvString) {
+               exportFileURL = URL
+            
+           }
+           
+               
+           case .json:
+               
+               var jsonData: [[String: Any]] = []
+               
+               for day in days {
+                   if day.weight != 0 {
+                       var jsonObject: [String: Any] = [:]
+                       jsonObject["Date"] = day.csvDate
+                       jsonObject["Weight (kg)"] = day.weight
+                       jsonObject["Total Calories"] = day.totalCalories
+                       jsonObject["Foods Eaten"] = day.foodsEatentoCSV
+                       
+                       jsonData.append(jsonObject)
+                   }
+                   
+                  
+               }
+           
+         
+           
+           
+           
+           
+           
+           
+           
+           
+       }
+      
+        isExporting = true
+        
+       }
+
+
+    
 }
 
-
-extension DateFormatter {
-    static let dayOfWeek: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE"
-        return formatter
-    }()
-}
-
-private func exportDays(format: ExportFormat, _ days: [Day]) -> Void {
-    let fileManager = FileManager.default
-
-    switch format {
-        case .csv:
-        
-        var csvString = "Date,Weight (kg),Total Calories, Food Log\n"
-        for day in days {
-            if day.weight != 0 {
-                let row = "\(day.csvDate),\(day.weight),\(day.totalCalories), \(day.foodsEatentoCSV)\n"
-                csvString.append(row)
-            }
-        }
-        
-            
-        case .json:
-            
-            var jsonData: [[String: Any]] = []
-            
-            for day in days {
-                if day.weight != 0 {
-                    var jsonObject: [String: Any] = [:]
-                    jsonObject["Date"] = day.csvDate
-                    jsonObject["Weight (kg)"] = day.weight
-                    jsonObject["Total Calories"] = day.totalCalories
-                }
-            }
-        
-        
-    }
-   
-    }
 
 
 #Preview {

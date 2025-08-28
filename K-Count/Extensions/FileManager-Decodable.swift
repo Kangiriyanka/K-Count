@@ -8,6 +8,10 @@
 import Foundation
 
 
+
+
+
+
 extension FileManager {
     
     func decode<T: Codable>(_ file: String) -> T {
@@ -65,6 +69,25 @@ extension FileManager {
             fatalError("Couldn't write CSV file to disk.")
         }
         
+    }
+    
+    
+    func saveJSONFile<T: Encodable>(object: T, file: String) throws -> URL {
+        guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            throw FileSaveError.noDocumentsDirectory
+        }
+        
+        let fileURL = documentsURL.appendingPathComponent(file)
+        
+        do {
+            let data = try JSONEncoder().encode(object)
+            try data.write(to: fileURL, options: .atomic)
+            return fileURL
+        } catch let error as EncodingError {
+            throw FileSaveError.encodingFailed(error)
+        } catch {
+            throw FileSaveError.writingFailed(error)
+        }
     }
     
 }
