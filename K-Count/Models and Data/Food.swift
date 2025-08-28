@@ -9,13 +9,16 @@ import Foundation
 import SwiftData
 
 @Model
-class Food {
+class Food: Codable {
     
     var name: String
     var calories: Double
     var servingType: String
     
- 
+    enum CodingKeys: String, CodingKey {
+           case name, calories, servingType
+       }
+    
     
     static let example = Food(name: "Reese Peanut Butter Cup", calories: 150, servingType: "piece")
     static let another_example =  Food(name: "Steak", calories: 3, servingType: "gram")
@@ -65,5 +68,21 @@ class Food {
         self.calories = calories
         self.servingType = servingType
     }
+    
+    
+    required init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.name = try container.decode(String.self, forKey: .name)
+            self.calories = try container.decode(Double.self, forKey: .calories)
+            self.servingType = try container.decode(String.self, forKey: .servingType)
+        }
+    
+    
+    func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(name, forKey: .name)
+            try container.encode(calories, forKey: .calories)
+            try container.encode(servingType, forKey: .servingType)
+        }
     
 }

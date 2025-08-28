@@ -10,7 +10,7 @@ import SwiftData
 
 
 @Model
-class Day {
+class Day: Codable {
     @Attribute(.unique) var date : Date
     var weight: Double
     var formattedDate: String {
@@ -18,6 +18,10 @@ class Day {
         formatter.dateFormat = "MMMM d, yyy"
         return formatter.string(from: date)
     }
+    
+    enum CodingKeys: String, CodingKey {
+           case date, weight, foodEntries
+       }
   
     
     var formattedWeight: String {
@@ -126,6 +130,24 @@ class Day {
             
             return container
     }
+    
+    
+    required init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.weight = try container.decode(Double.self, forKey: .weight)
+        self.date = try container.decode(Date.self, forKey: .date)
+            self.foodEntries = try container.decode([FoodEntry].self, forKey: .foodEntries)
+        
+        }
+    
+    func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(date, forKey: .date)
+            try container.encode(weight, forKey: .weight)
+            try container.encode(foodEntries, forKey: .foodEntries)
+
+        }
+    
     
     static let emptyDay = Day(date: Date(), weight: 0.0, foodEntries: [])
     

@@ -51,10 +51,10 @@ extension FileManager {
         
     }
     
-    func saveCSVFile(csvString: String, file: String = "data.csv") -> URL? {
+    func saveCSVFile(csvString: String, file: String = "data.csv") throws -> URL? {
         
         guard let documentsURL = self.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            fatalError("Couldn't find documents directory.")
+            throw FileSaveError.noDocumentsDirectory
         }
         
         // Append the file name to the documentsURL
@@ -66,7 +66,7 @@ extension FileManager {
             return fileURL
         }
         catch {
-            fatalError("Couldn't write CSV file to disk.")
+            throw FileSaveError.writingFailed(error)
         }
         
     }

@@ -199,30 +199,33 @@ struct AllDaysView: View {
                }
            }
            
-           if let URL = fileManager.saveCSVFile(csvString: csvString) {
-               exportFileURL = URL
-            
+           do {
+               if let URL = try fileManager.saveCSVFile(csvString: csvString) {
+                   exportFileURL = URL
+               }
            }
-           
-               
-           case .json:
-               
-               var jsonData: [[String: Any]] = []
-               
-               for day in days {
-                   if day.weight != 0 {
-                       var jsonObject: [String: Any] = [:]
-                       jsonObject["Date"] = day.csvDate
-                       jsonObject["Weight (kg)"] = day.weight
-                       jsonObject["Total Calories"] = day.totalCalories
-                       jsonObject["Foods Eaten"] = day.foodsEatentoCSV
-                       
-                       jsonData.append(jsonObject)
-                   }
+               catch {
                    
-                  
+                   errorMessage = error.localizedDescription
+                   showError = true
+                   
                }
            
+           
+               
+       case .json:
+           // Filter days with weight > 0
+           let exportDays = days.filter { $0.weight != 0 }
+           
+           do {
+               let url = try fileManager.saveJSONFile(object: exportDays, file: "days.json")
+               exportFileURL = url
+           } catch {
+               errorMessage = "Failed to create JSON file: \(error.localizedDescription)"
+               showError = true
+           }
+           
+         
          
            
            
