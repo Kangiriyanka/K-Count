@@ -58,9 +58,10 @@ struct EditDayDataView: View {
                     }
                   
                     HStack {
-                        Text("Total").fontWeight(.semibold)
+                        Text("Total Calories").fontWeight(.semibold)
                         Spacer()
                         Text(String(format: "%.1f", dayCalories))
+                            .foregroundStyle(.secondary)
                      
                     }
                     

@@ -13,3 +13,14 @@ enum FileSaveError: Error {
     case encodingFailed(Error)
     case writingFailed(Error)
 }
+
+
+enum FileDecodeError: Error {
+    case noDocumentsDirectory
+    case fileNotFound(URL)
+    case keyNotFound(String, String)
+    case typeMismatch(String)
+    case valueNotFound(String)
+    case dataCorrupted
+    case unknown(String)
+}

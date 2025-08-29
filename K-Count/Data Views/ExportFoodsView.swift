@@ -15,25 +15,29 @@ struct ExportFoodsView: View {
     @State private var errorMessage = ""
     @State private var showError = false
     var body: some View {
-        VStack {
-            Text("Select a format").fontWeight(.semibold)
-            Picker("Format", selection: $selectedFormat) {
-                ForEach(ExportFormat.allCases, id: \.self) { format in
-                    Text(format.rawValue)
-                        .tag(format)
+        VStack(spacing:10) {
+            Text("Exporting Foods ").fontWeight(.semibold).underline()
+            HStack(spacing:0 ) {
+                Text("Select a format:")
+                Picker("Format", selection: $selectedFormat) {
+                    ForEach(ExportFormat.allCases, id: \.self) { format in
+                        Text(format.rawValue)
+                            .tag(format)
+                    }
                 }
-            }
-            .onChange(of: selectedFormat) { _, _ in
-                exportFoods(format: selectedFormat, foods)
-            }
-            .onAppear {
-                exportFoods(format: selectedFormat, foods)
+                .onChange(of: selectedFormat) { _, _ in
+                    exportFoods(format: selectedFormat, foods)
+                }
+                .onAppear {
+                    exportFoods(format: selectedFormat, foods)
+                }
             }
             
             
             if let exportFileURL {
+                
                 ShareLink(item: exportFileURL ) {
-                    Label("Save", systemImage: "square.and.arrow.up")
+                    Text("Save").fontWeight(.bold)
                 }
               
                  
@@ -44,12 +48,17 @@ struct ExportFoodsView: View {
             
         }
         .padding()
- 
-
+        .frame(width: 300)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(.accent.opacity(0.05))
+        )
         .overlay(
             RoundedRectangle(cornerRadius: 8)
                 .stroke(.accent, lineWidth: 0.5)
         )
+
+     
        
     }
     
@@ -90,10 +99,9 @@ struct ExportFoodsView: View {
              
      case .json:
   
-        
          
          do {
-             let url = try fileManager.saveJSONFile(object: foods, file: "foods")
+             let url = try fileManager.saveJSONFile(object: foods, file: "foods.json")
              exportFileURL = url
          } catch {
              errorMessage = "Failed to create JSON file: \(error.localizedDescription)"

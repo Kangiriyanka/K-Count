@@ -13,7 +13,6 @@ enum ExportFormat: String, CaseIterable {
 }
 
 
-
 struct ExportDaysView: View {
     
     @State private var exportFileURL: URL?
@@ -21,28 +20,35 @@ struct ExportDaysView: View {
     @State private var selectedFormat: ExportFormat = .csv
     @State private var errorMessage = ""
     @State private var showError = false
+    @AppStorage("userSettings") var userSettings = UserSettings()
     
     var body: some View {
-        VStack {
-            Text("Select a format").fontWeight(.semibold)
-            Picker("Format", selection: $selectedFormat) {
-                ForEach(ExportFormat.allCases, id: \.self) { format in
-                    Text(format.rawValue)
-                        .tag(format)
+        VStack(spacing: 10) {
+            Text("Exporting days ").fontWeight(.semibold).underline()
+            HStack(spacing:0){
+                Text("Select a format:")
+                Picker("Format", selection: $selectedFormat) {
+                    ForEach(ExportFormat.allCases, id: \.self) { format in
+                        Text(format.rawValue)
+                            .tag(format)
+                    }
+                }
+                
+                .onChange(of: selectedFormat) { _, _ in
+                    exportDays(format: selectedFormat, days)
+                }
+                .onAppear {
+                    exportDays(format: selectedFormat, days)
                 }
             }
-            .onChange(of: selectedFormat) { _, _ in
-                exportDays(format: selectedFormat, days)
-            }
-            .onAppear {
-                exportDays(format: selectedFormat, days)
-            }
             
+         
             
             if let exportFileURL {
                 ShareLink(item: exportFileURL ) {
                     Text("Save").fontWeight(.bold)
                 }
+                
                
                  
              
@@ -53,7 +59,11 @@ struct ExportDaysView: View {
         }
         .padding()
  
-
+        .frame(width: 300)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(.accent.opacity(0.05)) 
+        )
         .overlay(
             RoundedRectangle(cornerRadius: 8)
                 .stroke(.accent, lineWidth: 0.5)
@@ -72,17 +82,28 @@ struct ExportDaysView: View {
     
     func exportDays(format: ExportFormat, _ days: [Day]) -> Void {
      let fileManager = FileManager.default
+      
    
-
+        let exportDays = days.filter {$0.weight != 0}
      switch format {
          case .csv:
          
-         var csvString = "Date,Weight (kg),Total Calories, Food Log\n"
-         for day in days {
-             if day.weight != 0 {
-                 let row = "\(day.csvDate),\(day.weight),\(day.totalCalories), \(day.foodsEatentoCSV)\n"
-                 csvString.append(row)
+         var csvString = "Date,Weight,Total Calories, Food Log\n"
+         for day in exportDays {
+             
+             var csvWeight: String {
+                 let dayWeight = WeightValue.metric(day.weight)
+                 if userSettings.weightPreference == .metric {
+                     return dayWeight.kilogramsDescription
+                 } else {
+                     return dayWeight.poundsDescription
+                 }
              }
+             
+             
+             let row = "\(day.csvDate),\(csvWeight),\(day.totalCalories), \(day.foodsEatentoCSV)\n"
+                 csvString.append(row)
+             
          }
          
          do {
@@ -101,10 +122,10 @@ struct ExportDaysView: View {
              
      case .json:
          // Filter days with weight > 0
-         let exportDays = days.filter { $0.weight != 0 }
+         
          
          do {
-             let url = try fileManager.saveJSONFile(object: exportDays, file: "days")
+             let url = try fileManager.saveJSONFile(object: exportDays, file: "days.json")
              exportFileURL = url
          } catch {
              errorMessage = "Failed to create JSON file: \(error.localizedDescription)"

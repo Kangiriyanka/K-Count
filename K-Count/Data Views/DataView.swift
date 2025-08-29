@@ -43,6 +43,15 @@ struct DataView: View {
                         .dataCardStyle()
                       
                     }
+                    
+                    NavigationLink(destination: AboutView()) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "info.circle")
+                            Text("About K-Count")
+                        }
+                        .dataCardStyle()
+                      
+                    }
                 }
                 .padding()
             }

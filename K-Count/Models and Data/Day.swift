@@ -45,7 +45,7 @@ class Day: Codable {
         foodEntries.forEach { entry in
             
             
-            let foodData = "(\(entry.food.name)  \(entry.food.calories)  \(entry.servingSize)   \(entry.food.calories * entry.servingSize)) "
+            let foodData = "(\(entry.food.name)  \(entry.food.calories) x \(entry.servingSize) =   \(entry.food.calories * entry.servingSize)) "
             result += foodData
             
         }
