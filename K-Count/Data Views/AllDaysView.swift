@@ -66,36 +66,49 @@ struct AllDaysView: View {
     
     var body: some View {
         NavigationStack {
+            
             List {
-                ForEach(filteredDays) { day in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(day.formattedDate)
-                                .font(.body)
-                            Text(DateFormatter.dayOfWeek.string(from: day.date))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer()
-                        
-                        VStack(alignment: .trailing, spacing: 2) {
-                            let weightValue = WeightValue.metric(day.weight)
-                            Text(weightValue.display(for: userSettings.weightPreference))
-                                
-                                .foregroundColor(.secondary)
-                        }
+                
+                if filteredDays.isEmpty {
+                    ContentUnavailableView {
+                        Label("No foods added", systemImage: "basket")
+                    } description: {
+                        Text("Add foods and come back to see your inventory")
                     }
-                    .contentShape(Rectangle())
-                    .overlay(
-                        NavigationLink(destination: EditDayDataView(day: day)) {
-                            EmptyView()
+                } else {
+                    List {
+                        ForEach(filteredDays) { day in
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(day.formattedDate)
+                                        .font(.body)
+                                    Text(DateFormatter.dayOfWeek.string(from: day.date))
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                Spacer()
+                                
+                                VStack(alignment: .trailing, spacing: 2) {
+                                    let weightValue = WeightValue.metric(day.weight)
+                                    Text(weightValue.display(for: userSettings.weightPreference))
+                                    
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .contentShape(Rectangle())
+                            .overlay(
+                                NavigationLink(destination: EditDayDataView(day: day)) {
+                                    EmptyView()
+                                }
+                                    .opacity(0)
+                            )
                         }
-                        .opacity(0)
-                    )
+                        
+                    }
                 }
-              
             }
+            
          
                    
             .navigationTitle("All Days")

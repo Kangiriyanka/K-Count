@@ -12,6 +12,7 @@ import SwiftData
 class FoodEntry: Codable {
     
     
+    @Attribute(.unique) var id: UUID = UUID()
     var food: Food
     var servingSize: Double
     @Relationship(inverse: \Day.foodEntries) var day: Day?

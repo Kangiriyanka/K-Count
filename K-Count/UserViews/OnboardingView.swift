@@ -69,7 +69,7 @@ struct OnboardingView: View {
                         DatePicker(
                                "",
                                selection: $birthday,
-                               in: Calendar.current.date(byAdding: .year, value: -100, to: Date())!...Date(),
+                               in: Calendar.current.date(byAdding: .year, value: -100, to: Date())!...Calendar.current.date(byAdding: .year, value: -16, to: Date())!,
                                displayedComponents: .date
                            )
                            .datePickerStyle(.compact)

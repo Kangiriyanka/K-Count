@@ -39,11 +39,15 @@ struct FoodsAddedView: View {
                                 .foregroundStyle(.primary)
                         }
                         .padding()
-                        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6)))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color(.systemGray4), lineWidth: 0.5)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.accent.opacity(0.05))
                         )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(.accent, lineWidth: 0.5)
+                        )
+                        
                     }
                 }
             }

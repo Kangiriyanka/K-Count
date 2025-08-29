@@ -3,62 +3,47 @@ import SwiftUI
 struct PoundPicker: View {
     @Binding var selectedValue: WeightValue
     
-
+    @State private var integerPart: Int
+    @State private var fractionPart: Int
+    
     private let integerRange = Array(50...500)
-    private let fractionRange = Array(0...9) 
+    private let fractionRange = Array(0...9)
     
- 
-    private var selectedInteger: Int {
-        Int(selectedValue.asPounds)
-    }
-    
-    private var selectedFraction: Int {
-        Int((selectedValue.asPounds - Double(selectedInteger)) * 10)
+    init(selectedValue: Binding<WeightValue>) {
+        _selectedValue = selectedValue
+        let lbs = selectedValue.wrappedValue.asPounds
+        _integerPart = State(initialValue: Int(lbs))
+        _fractionPart = State(initialValue: Int((lbs * 10).rounded()) % 10)
     }
     
     var body: some View {
         VStack(spacing: 16) {
-            // Fixed: Display pounds, not height
             Text(String(format: "Weight: %.1f lbs", selectedValue.asPounds))
                 .font(.title3)
                 .fontWeight(.semibold)
             
             HStack(spacing: 4) {
-                // Integer part picker
-                Picker("Pounds", selection: Binding(
-                    get: { selectedInteger },
-                    set: { newValue in
-                        let newPounds = Double(newValue) + Double(selectedFraction) / 10.0
-                        selectedValue = .imperial(newPounds)
-                    }
-                )) {
+                Picker("Pounds", selection: $integerPart) {
                     ForEach(integerRange, id: \.self) { value in
-                        Text("\(value)")
-                            .tag(value)
+                        Text("\(value)").tag(value)
                     }
                 }
                 .pickerStyle(.wheel)
                 .frame(width: 100)
+                .onChange(of: integerPart) { _,_ in updateValue() }
                 
                 Text(".")
                     .font(.title2)
                     .fontWeight(.medium)
                 
-                // Fraction part picker
-                Picker("Decimal", selection: Binding(
-                    get: { selectedFraction },
-                    set: { newValue in
-                        let newPounds = Double(selectedInteger) + Double(newValue) / 10.0
-                        selectedValue = .imperial(newPounds)
-                    }
-                )) {
+                Picker("Decimal", selection: $fractionPart) {
                     ForEach(fractionRange, id: \.self) { value in
-                        Text("\(value)")
-                            .tag(value)
+                        Text("\(value)").tag(value)
                     }
                 }
                 .pickerStyle(.wheel)
                 .frame(width: 60)
+                .onChange(of: fractionPart) { _,_ in updateValue() }
                 
                 Text("lbs")
                     .font(.title3)
@@ -67,18 +52,19 @@ struct PoundPicker: View {
             }
         }
     }
+    
+    private func updateValue() {
+        let newLbs = Double(integerPart) + Double(fractionPart) / 10.0
+        selectedValue = .imperial(newLbs)
+    }
 }
 
 struct PoundPickerPreview: View {
     @State private var weight = WeightValue.imperial(130.5)
     
     var body: some View {
-        VStack {
-            PoundPicker(selectedValue: $weight)
-                .frame(height: 200)
-            
-         
-        }
+        PoundPicker(selectedValue: $weight)
+            .frame(height: 200)
     }
 }
 
