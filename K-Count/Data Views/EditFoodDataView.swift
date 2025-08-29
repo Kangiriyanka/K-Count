@@ -7,19 +7,21 @@
 
 import SwiftUI
 
-struct EditFoodView: View {
+struct EditFoodDataView: View {
     var food: Food
     
     @State private var foodName: String
     @State private var calories: String
     @State private var servingType: String
+    @Environment(\.dismiss) var dismiss
     
     @FocusState private var firstFoodNameFieldIsFocused: Bool
+   
     var body: some View {
         
         NavigationStack {
             Form {
-                Section("Edit \(foodName)") {
+                Section("Edit \(food.name)") {
                     TextField("Enter food name", text: $foodName)
                         .focused($firstFoodNameFieldIsFocused)
                     TextField("Enter calories ", text: $calories)
@@ -44,7 +46,9 @@ struct EditFoodView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
                         saveFood()
+                        dismiss()
                     }
+                    .disabled(isDisabled())
                     .fontWeight(.semibold)
                  
                 }
@@ -58,12 +62,19 @@ struct EditFoodView: View {
     
     
     
-    func saveFood() {
+    private func saveFood() {
         
         food.name = foodName
         food.calories = Double(calories) ?? 0.0
         food.servingType = servingType
         
+    }
+    
+    private func isDisabled() -> Bool {
+        if foodName.isEmpty || calories.isEmpty || servingType.isEmpty {
+            return true
+        }
+        return false
     }
     
     init(food: Food) {
@@ -77,5 +88,5 @@ struct EditFoodView: View {
 
 
 #Preview {
-    EditFoodView(food: Food.exampleDairy)
+    EditFoodDataView(food: Food.exampleDairy)
 }

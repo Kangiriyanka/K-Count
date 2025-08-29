@@ -8,10 +8,7 @@
 import SwiftUI
 import SwiftData
 
-enum ExportFormat: String, CaseIterable {
-    case csv
-    case json
-}
+
 
 struct AllDaysView: View {
     
@@ -19,12 +16,10 @@ struct AllDaysView: View {
     @AppStorage("userSettings") var userSettings = UserSettings()
     @State private var isPresentingConfirm: Bool = false
     @State private var searchText = ""
-    @State private var exportFileURL: URL? = nil
     @State private var isExporting: Bool = false
     @State private var selectedSortOption: SortOption = .dateDescending
-    @State private var selectedFormat: ExportFormat = .csv
-    @State private var errorMessage: String? = nil
-    @State private var showError = false
+ 
+  
     
     @Query var days: [Day]
     
@@ -34,13 +29,13 @@ struct AllDaysView: View {
         var displayName: String {
             switch self {
             case .dateAscending:
-                return "Date Oldest First"
+                return "Oldest First"
             case .dateDescending:
-                return "Date Newest First"
+                return "Newest First"
             case .weightAscending:
-                return "Weight Highest First"
+                return "Highest First"
             case .weightDescending:
-                return "Weight Lowest First"
+                return "Lowest First"
             }
         }
         
@@ -65,6 +60,10 @@ struct AllDaysView: View {
         }
     }
     
+    var nonEmptyDays: [Day]  {
+        return days.filter { $0.weight > 0.0 }
+    }
+    
     var body: some View {
         NavigationStack {
             List {
@@ -83,13 +82,13 @@ struct AllDaysView: View {
                         VStack(alignment: .trailing, spacing: 2) {
                             let weightValue = WeightValue.metric(day.weight)
                             Text(weightValue.display(for: userSettings.weightPreference))
-                                .font(.body)
-                                .fontWeight(.medium)
+                                
+                                .foregroundColor(.secondary)
                         }
                     }
                     .contentShape(Rectangle())
                     .overlay(
-                        NavigationLink(destination: EditCurrentWeightView(day: day)) {
+                        NavigationLink(destination: EditDayDataView(day: day)) {
                             EmptyView()
                         }
                         .opacity(0)
@@ -97,56 +96,49 @@ struct AllDaysView: View {
                 }
               
             }
-            .alert("Error", isPresented: $showError) {
-                       Button("OK", role: .cancel) { }
-                   } message: {
-                       Text(errorMessage ?? "Unknown error")
-                   }
+         
                    
             .navigationTitle("All Days")
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
+            
+            
             .sheet(isPresented: $isExporting) {
                 
-                if let url = exportFileURL {
-                       ExportView(url: url)
-                        .presentationDetents([.fraction(0.20)])
-                    
-                   }
+
+                    ExportDaysView(days: nonEmptyDays)
+                        .presentationDetents([.fraction(0.25)])
+            
                 
-                
-                
-              
+        
             }
           
             .toolbar {
-                ToolbarItemGroup {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
                     
              
-                    Menu {
-                  
-                        Picker("Format", selection: $selectedFormat) {
-                            ForEach(ExportFormat.allCases, id: \.self) { format in
-                                Text(format.rawValue)
-                                    .tag(format)
-                            }
-                        }
-                        Divider()
-                        Button("Export") {
-                            exportDays(format: selectedFormat, filteredDays)
-                        }
-                        .fontWeight(.bold)
-                    } label : {
-                        Image(systemName: "square.and.arrow.up")
-                            .fontWeight(.medium)
-                    }
+                    
+             
+                        
+               
                     
                  
-                        
+                    // Menus and sub-menus for sorting the days
+                    
                     Menu {
                                Menu {
                                    ForEach([SortOption.dateDescending, SortOption.dateAscending], id: \.self) { option in
                                        Button(action: { selectedSortOption = option }) {
-                                           Label(option.displayName, systemImage: selectedSortOption == option ? "checkmark" : "")
+                                           if (selectedSortOption == option) {
+                                               
+                                               HStack {
+                                                   Text(option.displayName)
+                                                   Image(systemName: "checkmark")
+                                               }
+                                       
+                                           }
+                                           else {
+                                               Text(option.displayName)
+                                           }
                                        }
                                    }
                                } label: {
@@ -159,7 +151,18 @@ struct AllDaysView: View {
                                Menu {
                                    ForEach([SortOption.weightDescending, SortOption.weightAscending], id: \.self) { option in
                                        Button(action: { selectedSortOption = option }) {
-                                           Label(option.displayName, systemImage: selectedSortOption == option ? "checkmark" : "")
+                                           
+                                           if (selectedSortOption == option) {
+                                               
+                                               HStack {
+                                                   Text(option.displayName)
+                                                   Image(systemName: "checkmark")
+                                               }
+                                       
+                                           }
+                                           else {
+                                               Text(option.displayName)
+                                           }
                                        }
                                    }
                                } label: {
@@ -173,7 +176,19 @@ struct AllDaysView: View {
                           
                            } label: {
                                Image(systemName: "arrow.up.arrow.down")
+                                
                            }
+                    
+                    HStack {
+                        Button {
+                            isExporting.toggle()
+                        } label: {
+                            Label("", systemImage: "square.and.arrow.up")
+                                .labelStyle(.iconOnly)
+                        }
+                   
+  
+                    }
                     }
                 
             }
@@ -181,68 +196,7 @@ struct AllDaysView: View {
         }
     }
     
-    
-    
-    
-    func exportDays(format: ExportFormat, _ days: [Day]) -> Void {
-       let fileManager = FileManager.default
-     
 
-       switch format {
-           case .csv:
-           
-           var csvString = "Date,Weight (kg),Total Calories, Food Log\n"
-           for day in days {
-               if day.weight != 0 {
-                   let row = "\(day.csvDate),\(day.weight),\(day.totalCalories), \(day.foodsEatentoCSV)\n"
-                   csvString.append(row)
-               }
-           }
-           
-           do {
-               if let URL = try fileManager.saveCSVFile(csvString: csvString) {
-                   exportFileURL = URL
-               }
-           }
-               catch {
-                   
-                   errorMessage = error.localizedDescription
-                   showError = true
-                   
-               }
-           
-           
-               
-       case .json:
-           // Filter days with weight > 0
-           let exportDays = days.filter { $0.weight != 0 }
-           
-           do {
-               let url = try fileManager.saveJSONFile(object: exportDays, file: "days.json")
-               exportFileURL = url
-           } catch {
-               errorMessage = "Failed to create JSON file: \(error.localizedDescription)"
-               showError = true
-           }
-           
-         
-         
-           
-           
-           
-           
-           
-           
-           
-           
-       }
-      
-        isExporting = true
-        
-       }
-
-
-    
 }
 
 

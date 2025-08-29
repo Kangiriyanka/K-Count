@@ -35,7 +35,7 @@ struct DayView: View {
                 }
      
             // List of all the foods eaten of that day
-                Section(header: Text("Foods Eaten")) {
+                Section(header: Text("Food Log")) {
                    
                     
                     if day.foodEntries.isEmpty {
@@ -69,6 +69,8 @@ struct DayView: View {
           
             
             .listRowSpacing(10)
+           
+           
             .navigationTitle(day.formattedDate)
             .navigationBarTitleDisplayMode(.inline)
           

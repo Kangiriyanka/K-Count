@@ -20,6 +20,10 @@ class FoodEntry: Codable {
            case food, servingSize
        }
     
+    var totalCalories: Double {
+        food.calories * servingSize
+    }
+    
     
     init(food: Food, servingSize: Double) {
         

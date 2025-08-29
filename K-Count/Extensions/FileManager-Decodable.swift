@@ -9,9 +9,6 @@ import Foundation
 
 
 
-
-
-
 extension FileManager {
     
     func decode<T: Codable>(_ file: String) -> T {
@@ -51,14 +48,14 @@ extension FileManager {
         
     }
     
-    func saveCSVFile(csvString: String, file: String = "data.csv") throws -> URL? {
+    func saveCSVFile(csvString: String, filename: String) throws -> URL? {
         
         guard let documentsURL = self.urls(for: .documentDirectory, in: .userDomainMask).first else {
             throw FileSaveError.noDocumentsDirectory
         }
         
         // Append the file name to the documentsURL
-        let fileURL = documentsURL.appendingPathComponent(file)
+        let fileURL = documentsURL.appendingPathComponent(filename)
         
         do {
             try csvString.write(to: fileURL, atomically: true, encoding: .utf8)

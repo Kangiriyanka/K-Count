@@ -36,29 +36,13 @@ struct ProgressView: View {
                         
                         Spacer()
                         
-                        VStack {
-                            Text("Maintenance calories")
-                                .italic()
-                                .foregroundStyle(.secondary)
-                                .font(.caption2)
-                            
-                            Text(String(format: "%0.f", userSettings.TDEE))
-                                .font(.title)
-                                .bold()
-                                .padding(.bottom, 4)
-                                .overlay(
-                                    Color.burntOrange
-                                        .frame(height: 3),
-                                    alignment: .bottom
-                                )
-                        }
-                        .smallDataCardStyle()
+                      
                         
-                        Spacer()
+                    
                     }
                 }
               
-                .navigationBarTitle("Progress", displayMode: .inline)
+                .navigationBarTitle("My Progress", displayMode: .inline)
             }
         }
     }

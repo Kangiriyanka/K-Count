@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct UserSettingsView: View {
+struct ProfileView: View {
     
     @AppStorage("userSettings") var userSettings = UserSettings()
 
@@ -50,6 +50,8 @@ struct UserSettingsView: View {
                         TextField("Name", text: $editableSettings.name)
                             .keyboardType(.default)
                             .multilineTextAlignment(.trailing)
+                            .limitText($editableSettings.name, to: 30)
+                            
                     }
                 }
                 
@@ -144,7 +146,7 @@ struct UserSettingsView: View {
             } message: {
                 Text(errorMessage)
             }
-            .navigationTitle("\(userSettings.name)'s Information")
+            .navigationTitle("My Information")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
              
@@ -183,5 +185,5 @@ struct UserSettingsView: View {
 }
 
 #Preview {
-    UserSettingsView()
+    ProfileView()
 }

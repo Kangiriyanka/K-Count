@@ -11,12 +11,13 @@ import SwiftData
 struct DataView: View {
     
     @Query(sort: \Day.date, order: .reverse) var days: [Day]
+    @AppStorage("userSettings") var userSettings = UserSettings()
   
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 16) {
+                VStack(spacing: 20) {
                     
                     NavigationLink(destination: AllFoodsView()) {
                         HStack(spacing: 6){
@@ -29,23 +30,23 @@ struct DataView: View {
                     NavigationLink(destination: AllDaysView()) {
                         HStack(spacing: 6) {
                             Image(systemName: "list.clipboard")
-                            Text("Days Data")
+                            Text("My Days")
                         }
                         .dataCardStyle()
                     }
                     
-                    NavigationLink(destination: UserSettingsView()) {
+                    NavigationLink(destination: ProfileView()) {
                         HStack(spacing: 6) {
                             Image(systemName: "person.fill")
-                            Text("User Preferences")
+                            Text("My Profile")
                         }
                         .dataCardStyle()
                       
                     }
                 }
-                .padding(.horizontal)
+                .padding()
             }
-            .navigationBarTitle("Data", displayMode: .automatic)
+            .navigationBarTitle("My Data", displayMode: .inline)
         }
     }
     

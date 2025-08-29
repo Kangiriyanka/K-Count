@@ -175,12 +175,15 @@ struct AddFoodView: View {
     }
     // If our day doesn't contain the food entry, add it
     // Otherwise, update the portions
+    // You have to explicitly define the relationship from FoodEntry to Day
+    
     private func updateFoodEntries() {
         
         
         for entry in foodsAdded {
             if !day.foodEntries.contains(where: {$0.food.name == entry.food.name}) {
-    
+                //*** Here
+                entry.day = day
                 day.foodEntries.append(entry)
             }
             else {

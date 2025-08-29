@@ -15,6 +15,7 @@ struct AllFoodsView: View {
     @State private var searchText = ""
     @Query var existingFoods: [Food]
     @State private var selectedSortOption: SortOption = .nameDescending
+    @State private var isExporting: Bool = false
     
     enum SortOption: CaseIterable {
         case nameAscending, nameDescending, caloriesAscending, caloriesDescending
@@ -94,7 +95,7 @@ struct AllFoodsView: View {
                         }
                         .contentShape(Rectangle())
                         .overlay(
-                            NavigationLink(destination: EditFoodView(food: food)) {
+                            NavigationLink(destination: EditFoodDataView(food: food)) {
                                 EmptyView()
                             }
                                 .opacity(0)
@@ -106,29 +107,57 @@ struct AllFoodsView: View {
             
             .navigationTitle("All Foods")
             .searchable(text: $searchText , placement: .navigationBarDrawer(displayMode: .always))
+            .sheet(isPresented: $isExporting) {
+                
+
+                    ExportFoodsView(foods: existingFoods)
+                    .presentationDetents([.fraction(0.25)])
+            
+                
+        
+            }
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup{
+                    
+                    
+                    
                     
                     Menu {
                         Menu {
                             ForEach([SortOption.nameDescending, SortOption.nameAscending], id: \.self) { option in
                                 Button(action: { selectedSortOption = option }) {
-                                    Label(option.displayName, systemImage: selectedSortOption == option ? "checkmark" : "")
+                                    if (selectedSortOption == option) {
+                                        
+                                        HStack {
+                                            Text(option.displayName)
+                                            Image(systemName: "checkmark")
+                                        }
+                                        
+                                    }
+                                    else {
+                                        Text(option.displayName)
+                                    }
                                 }
                             }
                         } label: {
                             HStack(spacing:0) {
                                 Text("Name")
-                                Image(systemName: "calendar")
+                                Image(systemName: "textformat.abc")
                             }
                         }
                         
                         
                         Menu {
                             ForEach([SortOption.caloriesDescending, SortOption.caloriesAscending], id: \.self) { option in
-                                
-                                Button(action: {selectedSortOption = option}) {
-                                    Label(option.displayName, systemImage: selectedSortOption == option ? "checkmark" : "")
+                                Button(action: { selectedSortOption = option }) {
+                                    if (selectedSortOption == option) {
+                                        HStack {
+                                            Text(option.displayName)
+                                            Image(systemName: "checkmark")
+                                        }
+                                    } else {
+                                        Text(option.displayName)
+                                    }
                                 }
                             }
                         } label: {
@@ -141,12 +170,23 @@ struct AllFoodsView: View {
                     } label: {
                         Image(systemName: "arrow.up.arrow.down")
                     }
+                    
+                    HStack {
+                        Button {
+                            isExporting.toggle()
+                        } label: {
+                            Label("", systemImage: "square.and.arrow.up")
+                                .labelStyle(.iconOnly)
+                        }
+                   
+  
+                    }
                 }
+                
             }
             
+            
         }
-        
-        
     }
 }
 

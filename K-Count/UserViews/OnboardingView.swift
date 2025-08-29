@@ -8,10 +8,6 @@
 import SwiftUI
 
 
-
-
-// ---- Onboarding View ---- //
-
 struct OnboardingView: View {
     
     @AppStorage("userSettings") var userSettings = UserSettings()
@@ -20,6 +16,7 @@ struct OnboardingView: View {
     @State private var name: String = ""
     @State private var height: HeightValue = .metric(160)
     @State private var weight: WeightValue = .metric(60)
+    @State private var goalWeight: WeightValue = .metric(60)
     @State private var birthday: Date = Calendar.current.date(byAdding: .year, value: -18, to: Date()) ?? Date()
     @State private var age: String = ""
     @State private var sexAssigned: UserSettings.Sex = .male
@@ -28,6 +25,7 @@ struct OnboardingView: View {
     @State private var errorMessage = ""
     @State private var showError = false
     @State private var showWeightView = false
+    @State private var showGoalWeightView = false
     @State private var showHeightView = false
     @State private var hasPickedHeight = false
     @State private var hasPickedWeight = false
@@ -154,6 +152,34 @@ struct OnboardingView: View {
                 }
             }
                         
+                
+                Section("Goal Weight") {
+                    
+                    
+                    HStack {
+                        Text("Goal")
+                        Spacer()
+                        
+                        if hasPickedWeight {
+                            Text(weightPreference == .metric ? weight.kilogramsDescription :
+                                    weight.poundsDescription)
+                        } else {
+                            Text("Tap to select weight")
+                        }
+                        
+                     
+                    }
+                    .onTapGesture {
+                        showGoalWeightView.toggle()
+                    }
+                    
+                    .sheet(isPresented: $showGoalWeightView) {
+                        CustomWeightPicker(preference: $weightPreference, weight: $goalWeight)
+                                    .presentationDetents([.fraction(0.40)])
+                            }
+                    
+                 
+                }
                     
                     
                     
@@ -200,6 +226,11 @@ struct OnboardingView: View {
         
         if name.count < 2 {
             inputError(title: "Invalid Name", message: "Please enter 2 or more characters")
+            return false
+        }
+        
+        if name.count > 30 {
+            inputError(title: "Invalid Name", message: "Please enter less than 30 characters")
             return false
         }
         

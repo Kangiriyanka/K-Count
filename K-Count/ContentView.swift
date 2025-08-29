@@ -11,15 +11,12 @@ import SwiftData
 struct ContentView: View {
 
     @State private var selectedTab = 0
-    @AppStorage("userSettings") var userSettings = UserSettings()
-    @AppStorage("hasOnboarded") var hasOnboarded: Bool = false
+   
+  
     
     var body: some View {
         
     
-    
-        if (hasOnboarded) {
-            
             ZStack(alignment: .bottom) {
                 
                 
@@ -66,7 +63,8 @@ struct ContentView: View {
                 }
                 
                 .padding()
-                .ignoresSafeArea(.keyboard, edges: .bottom)
+               
+             
                 .toolbar(.hidden, for: .tabBar)
                 
                 
@@ -77,28 +75,14 @@ struct ContentView: View {
             .cornerRadius(20)
             .shadow(radius: 2, x: 0, y: 1)
             .padding(.horizontal, 35)
-        } else {
-            OnboardingView()
-            
-            
-            
-     }
-       
-        
-    
-     
-      
-        
-        
-      
-        
-        
-            
-            
-            
-            
         }
-    }
+            
+            
+            
+    
+
+        }
+    
     
 
 #Preview {

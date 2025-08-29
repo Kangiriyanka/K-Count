@@ -113,6 +113,14 @@ extension View {
         modifier(SmallDataCard())
     }
     
+    func limitText(_ text: Binding<String>, to limit: Int) -> some View {
+           self.onChange(of: text.wrappedValue) { _, newValue in
+               if newValue.count > limit {
+                   text.wrappedValue = String(newValue.prefix(limit))
+               }
+           }
+       }
+    
     func limitDecimals(_ number: Binding<String>, decimalLimit: Int, prefix: Int) -> some View {
         self
             .onChange(of: number.wrappedValue) {
