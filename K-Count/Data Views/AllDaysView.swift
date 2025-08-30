@@ -63,6 +63,7 @@ struct AllDaysView: View {
     var nonEmptyDays: [Day]  {
         return days.filter { $0.weight > 0.0 }
     }
+
     
     var body: some View {
         NavigationStack {
@@ -71,12 +72,12 @@ struct AllDaysView: View {
                 
                 if filteredDays.isEmpty {
                     ContentUnavailableView {
-                        Label("No foods added", systemImage: "basket")
+                        Label("No days found", systemImage: "calendar")
                     } description: {
-                        Text("Add foods and come back to see your inventory")
+                        Text("Try adding your first day or adjusting your search to see results.")
                     }
                 } else {
-                    List {
+                   
                         ForEach(filteredDays) { day in
                             HStack {
                                 VStack(alignment: .leading, spacing: 2) {
@@ -105,13 +106,13 @@ struct AllDaysView: View {
                             )
                         }
                         
-                    }
+                    
                 }
             }
             
          
                    
-            .navigationTitle("All Days")
+            .navigationTitle("My Days")
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             
             

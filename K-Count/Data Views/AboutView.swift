@@ -20,7 +20,7 @@ struct AboutView: View {
                        .font(.headline)
                        .fontWeight(.semibold)
                    
-                   Text("Everyone has a daily calorie need based on their sex, age, height, and weight — this is called TDEE (Total Daily Energy Expenditure). To lose weight, one just needs to eat fewer calories than their TDEE. Exercise allows eating more, but once that's accounted for, the real challenge is eating less. That's where K-Count helps — by letting users focus on just one thing.")
+                   Text("Your body burns a set amount of calories each day — your TDEE (Total Daily Energy Expenditure). To reach your goal, you simply need to eat above or below that number. K-Count keeps it simple by helping you stay mindful and focused.")
                        .font(.body)
                        .lineSpacing(2)
                }

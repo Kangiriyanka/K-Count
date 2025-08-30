@@ -155,7 +155,7 @@ struct ChartView: View {
                                
                     
                 }
-                .frame(width: chartWidth, height: 400)
+                .frame(width: chartWidth, height: 300)
             }
            
             

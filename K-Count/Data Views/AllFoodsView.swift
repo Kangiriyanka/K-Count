@@ -71,9 +71,9 @@ struct AllFoodsView: View {
                 
                 if filteredFoods.isEmpty {
                     ContentUnavailableView {
-                        Label("No foods added", systemImage: "basket")
+                        Label("No foods found", systemImage: "basket")
                     } description: {
-                        Text("Add foods and come back to see your inventory")
+                        Text("Try adding new foods or adjusting your search to see results.")
                     }
                 }
                 else {
@@ -105,7 +105,7 @@ struct AllFoodsView: View {
                 }
             }
             
-            .navigationTitle("All Foods")
+            .navigationTitle("My Foods")
             .searchable(text: $searchText , placement: .navigationBarDrawer(displayMode: .always))
             .sheet(isPresented: $isExporting) {
                 

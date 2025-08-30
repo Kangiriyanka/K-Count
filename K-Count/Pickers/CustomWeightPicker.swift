@@ -13,7 +13,7 @@ struct CustomWeightPicker: View {
         HStack {
             Button(""){}
             Spacer()
-            Text("Your Weight").fontWeight(.bold)
+            Text("Select Weight").fontWeight(.bold)
             Spacer()
             Button("", systemImage: "checkmark.circle") {
               dismiss()

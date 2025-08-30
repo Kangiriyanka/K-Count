@@ -12,13 +12,14 @@ struct ContentView: View {
    @State private var selectedTab = 0
    
    var body: some View {
+       
        ZStack(alignment: .bottom) {
            TabView(selection: $selectedTab) {
                LogView().tag(0)
                ProgressView().tag(1)
                DataView().tag(2)
            }
-           .toolbar(.hidden, for: .tabBar)
+         
            
            // Custom Tab Bar
            HStack {
@@ -45,6 +46,7 @@ struct ContentView: View {
            .cornerRadius(20)
            .shadow(radius: 2, x: 0, y: 1)
            .padding(.horizontal, 35)
+           .ignoresSafeArea(.keyboard, edges: .bottom)
        }
      
    }

@@ -13,6 +13,7 @@ struct UserSettings: Codable {
     var name: String
     var birthday: Date
     var weight: Double
+    var goalWeight: Double
     var height: Double
     var sex: Sex
     var activityLevel: ActivityLevel
@@ -55,6 +56,7 @@ struct UserSettings: Codable {
         name: String = "",
         birthday: Date = Date(),
         weight: Double = 0.0,
+        goalWeight: Double = 0.0,
         height: Double = 0.0,
         sex: Sex = .male,
         activityLevel: ActivityLevel = .sedentary,
@@ -65,6 +67,7 @@ struct UserSettings: Codable {
         self.birthday = birthday
         self.weight = weight
         self.height = height
+        self.goalWeight = goalWeight
         self.sex = sex
         self.activityLevel = activityLevel
         self.heightPreference = heightPreference
@@ -74,7 +77,7 @@ struct UserSettings: Codable {
     // MARK: - Codable
     
     enum CodingKeys: String, CodingKey {
-        case name, birthday, weight, height, sex, activityLevel,  heightPreference, weightPreference
+        case name, birthday, weight, goalWeight, height, sex, activityLevel,  heightPreference, weightPreference
     }
     
     init(from decoder: Decoder) throws {
@@ -82,6 +85,7 @@ struct UserSettings: Codable {
         self.name = try container.decode(String.self, forKey: .name)
         self.birthday = try container.decode(Date.self, forKey: .birthday)
         self.weight = try container.decode(Double.self, forKey: .weight)
+        self.goalWeight = try container.decode(Double.self, forKey: .goalWeight)
         self.height = try container.decode(Double.self, forKey: .height)
         self.sex = try container.decode(Sex.self, forKey: .sex)
         self.activityLevel = try container.decode(ActivityLevel.self, forKey: .activityLevel)
@@ -94,6 +98,7 @@ struct UserSettings: Codable {
         try container.encode(name, forKey: .name)
         try container.encode(birthday, forKey: .birthday)
         try container.encode(weight, forKey: .weight)
+        try container.encode(goalWeight, forKey: .goalWeight)
         try container.encode(height, forKey: .height)
         try container.encode(sex, forKey: .sex)
         try container.encode(activityLevel, forKey: .activityLevel)

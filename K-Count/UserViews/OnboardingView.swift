@@ -29,6 +29,7 @@ struct OnboardingView: View {
     @State private var showHeightView = false
     @State private var hasPickedHeight = false
     @State private var hasPickedWeight = false
+    @State private var hasPickedGoal = false
     @State private var heightPreference: MeasurementSystem = .metric
     @State private var weightPreference: MeasurementSystem = .metric
     @State private var feet: Int = 0
@@ -42,14 +43,22 @@ struct OnboardingView: View {
 
             Form {
                 
-                Text("Welcome to K-Count!")
-                .font(.title).bold()
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Welcome to K-Count")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    
+                    Text("Enter your details below to get started.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(nil)
+                }
+                .padding(.vertical, 8)
                 .listRowBackground(Color.clear)
                 
                 
                 
-                
-                Section("What's your name?") {
+                Section("Your name") {
                     
                     
                     HStack {
@@ -85,6 +94,7 @@ struct OnboardingView: View {
                                     height.feetInchesDescription)
                         } else {
                             Text("Tap to select height")
+                                .foregroundStyle(.secondary)
                         }
                             
                       
@@ -115,6 +125,7 @@ struct OnboardingView: View {
                                     weight.poundsDescription)
                         } else {
                             Text("Tap to select weight")
+                                .foregroundStyle(.secondary)
                         }
                         
                      
@@ -153,24 +164,28 @@ struct OnboardingView: View {
             }
                         
                 
-                Section("Goal Weight") {
+                Section("Your Goal Weight") {
                     
                     
                     HStack {
                         Text("Goal")
                         Spacer()
                         
-                        if hasPickedWeight {
-                            Text(weightPreference == .metric ? weight.kilogramsDescription :
-                                    weight.poundsDescription)
+                        if hasPickedGoal {
+                            Text(weightPreference == .metric ? goalWeight.kilogramsDescription :
+                                    goalWeight.poundsDescription)
                         } else {
-                            Text("Tap to select weight")
+                            Text("Tap to select goal weight")
+                                .foregroundStyle(.secondary)
                         }
                         
                      
                     }
                     .onTapGesture {
                         showGoalWeightView.toggle()
+                    }
+                    .onChange(of: goalWeight) { _, newValue in
+                        hasPickedGoal = true
                     }
                     
                     .sheet(isPresented: $showGoalWeightView) {
@@ -191,6 +206,7 @@ struct OnboardingView: View {
                             userSettings.birthday = birthday
                             userSettings.height = height.asCentimeters
                             userSettings.weight = weight.asKilograms
+                            userSettings.goalWeight = goalWeight.asKilograms
                             userSettings.sex = sexAssigned
                             userSettings.activityLevel = activityLevel
                             userSettings.heightPreference = heightPreference
@@ -203,7 +219,7 @@ struct OnboardingView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .listRowBackground(EmptyView())
-                    .buttonStyle(AddButton())
+                    .buttonStyle(OnboardingButton())
                     .disabled(
                         !hasPickedHeight ||
                         !hasPickedWeight ||
@@ -248,7 +264,7 @@ struct OnboardingView: View {
     
     func isDisabled() -> Bool {
         
-        return !hasPickedHeight || !hasPickedWeight || name.trimmingCharacters(in: .whitespacesAndNewlines).count < 3
+        return !hasPickedHeight || !hasPickedWeight || !hasPickedGoal || name.trimmingCharacters(in: .whitespacesAndNewlines).count < 3
     }
 }
 

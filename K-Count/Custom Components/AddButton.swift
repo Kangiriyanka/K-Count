@@ -21,6 +21,21 @@ struct AddButton: ButtonStyle {
 
             }
     }
+
+
+struct OnboardingButton: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .frame(width: 200, height: 25)
+            .padding()
+            .background(Color.accentColor)
+            .foregroundColor(.white).bold()
+            .clipShape(Capsule(style: .continuous))
+           
+        
+
+            }
+    }
                        
         
     

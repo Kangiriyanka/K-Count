@@ -16,6 +16,7 @@ struct ProfileView: View {
     @State private var errorMessage = ""
     @State private var showError = false
     @State private var showHeightView = false
+    @State private var showGoalWeightView = false
     @State private var showWeightView = false
     
     var heightText: String {
@@ -35,6 +36,15 @@ struct ProfileView: View {
             return weight.poundsDescription
         }
     }
+    
+    var goalWeightText: String {
+        let weight = WeightValue.metric(editableSettings.goalWeight)
+        if editableSettings.weightPreference == .metric {
+            return weight.kilogramsDescription
+        } else {
+            return weight.poundsDescription
+        }
+    }
  
     
     @Environment(\.dismiss) private var dismiss
@@ -43,7 +53,7 @@ struct ProfileView: View {
         NavigationStack {
             Form {
                 
-                Section("What's your name?") {
+                Section("My Name") {
                     
                     HStack {
                         Text("Name")
@@ -55,7 +65,7 @@ struct ProfileView: View {
                     }
                 }
                 
-                Section("Physical Stats (Age - Weight - Height)") {
+                Section("My Details") {
                     
                     HStack {
                         Text("Birthday")
@@ -127,6 +137,37 @@ struct ProfileView: View {
                         }
                     }
                 }
+                
+                
+                Section("My goal weight") {
+                    
+                    
+                    HStack {
+                        Text("Goal Weight")
+                        Spacer()
+                        Text(goalWeightText)
+                    }
+                    .onTapGesture {
+                        showGoalWeightView.toggle()
+                    }
+                    .sheet(isPresented: $showGoalWeightView) {
+                        CustomWeightPicker(
+                            preference: $editableSettings.weightPreference,
+                            weight: .init(
+                                
+                                get: {WeightValue.metric(editableSettings.goalWeight)},
+                                set: { newValue in editableSettings.goalWeight = newValue.asKilograms}
+                            )
+                            
+                            
+                        )
+                        .presentationDetents([.fraction(0.40)])
+                    }
+                    
+                    
+                }
+                
+                
             }
             .toolbar {
                
@@ -146,7 +187,7 @@ struct ProfileView: View {
             } message: {
                 Text(errorMessage)
             }
-            .navigationTitle("My Information")
+            .navigationTitle("My Profile")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
              

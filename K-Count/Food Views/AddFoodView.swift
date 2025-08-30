@@ -103,11 +103,11 @@ struct AddFoodView: View {
 
     private var foodListSection: some View {
         Group {
-            if foods.isEmpty {
+            if filteredFoods.isEmpty {
                 ContentUnavailableView {
-                    Label("No foods added", systemImage: "basket")
+                    Label("No foods found", systemImage: "basket")
                 } description: {
-                    Text("Create a new food by tapping on New Food")
+                    Text("Try adjusting your search to see results.")
                 }
             } else {
                 List {
