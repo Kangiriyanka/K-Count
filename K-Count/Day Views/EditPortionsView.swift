@@ -71,7 +71,7 @@ struct EditPortionsView: View {
                     
                 }
                 
-                .background(Color.white)
+                
                 .padding()
             
             

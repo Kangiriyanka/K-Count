@@ -216,14 +216,7 @@ struct AllDaysView: View {
 
 
 #Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Day.self, configurations: config)
-    
-    // Insert multiple examples
-    for day in Day.examples {
-        container.mainContext.insert(day)
-    }
-    
+ 
     return AllDaysView()
-        .modelContainer(container)
+        .modelContainer(Day.previewContainer())
 }

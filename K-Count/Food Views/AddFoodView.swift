@@ -31,11 +31,12 @@ struct CustomPicker: View {
                                 }
                             }
                         )
-                        .foregroundColor(selectedMode == mode ? .white : .black)
+                       
                 }
                 .buttonStyle(.plain)
             }
         }
+
         .frame(maxWidth: .infinity)
     }
 }
@@ -66,7 +67,7 @@ struct AddFoodView: View {
          
                 CustomPicker(selectedMode: $selectedMode)
                     .padding()
-                    .background(RoundedRectangle(cornerRadius: 8).fill(Color.white))
+                    .background(RoundedRectangle(cornerRadius: 8).fill(Color(.secondarySystemGroupedBackground)))
                     .shadow(radius: 2, x: 0, y: 0.2)
 
              

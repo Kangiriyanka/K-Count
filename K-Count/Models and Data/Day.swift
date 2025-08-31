@@ -117,16 +117,18 @@ class Day: Codable {
     }
 
  
+   
     static let examples: [Day] = generateExamples(count: 365)
     
     @MainActor static func previewContainer() -> ModelContainer {
             let config = ModelConfiguration(isStoredInMemoryOnly: true)
             let container = try! ModelContainer(for: Day.self, configurations: config)
             
-            // Add all example foods
+            let examples = generateExamples(count: 30)
             for day in examples {
                 container.mainContext.insert(day)
             }
+           
             
             return container
     }

@@ -14,6 +14,7 @@ struct DayView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var showingAddFoodSheet = false
     @State private var isVisible = 0
+    @Environment(\.colorScheme) var colorScheme
 
 
     var day: Day
@@ -30,7 +31,8 @@ struct DayView: View {
                         totalCalories: String(format: "%0.f", day.totalCalories),
                         remainingCalories: String(format: "%0.f", userSettings.calculateTDEE(using: userSettings.weight) - day.totalCalories)
                     )
-                    .borderedBackground( Color.burntOrange)
+                  
+                    .borderedBackground(Color.burntOrange, Color(.secondarySystemGroupedBackground) )
 
                 }
      
@@ -50,7 +52,7 @@ struct DayView: View {
                         
                         
                         FoodEntryRow(foodEntry: entry)
-                            .borderedBackground( Color.accentColor)
+                            .borderedBackground( Color.accentColor,  colorScheme == .dark ? Color(.secondarySystemGroupedBackground) : Color.white )
                            
                          
                             .listRowSeparator(.hidden)

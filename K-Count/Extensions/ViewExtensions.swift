@@ -64,13 +64,21 @@ struct DataCard: ViewModifier {
 }
 
 struct SmallDataCard: ViewModifier {
+    let normalPadding: CGFloat = 12
+
     func body(content: Content) -> some View {
         content
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(.white, in: RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal, normalPadding)
+            .padding(.vertical, normalPadding)
+            .background(
+                (Color(.secondarySystemGroupedBackground)),
+                in: RoundedRectangle(cornerRadius: 12)
+            )
             .shadow(color: .black.opacity(0.06), radius: 2)
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(.gray.opacity(0.1)))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color(.separator), lineWidth: 1)
+            )
     }
 }
 
@@ -95,13 +103,16 @@ extension View {
         )
     }
     
-    func borderedBackground(_ color: Color) -> some View {
+    func borderedBackground(_ color: Color, _ backgroundColor: Color) -> some View {
+        
         listRowBackground(
             ZStack(alignment: .leading) {
-                Color.white
+                backgroundColor
                 LeftBorder()
                     .stroke(color, lineWidth: 15)
+              
             }
+           
         )
     }
     

@@ -63,7 +63,7 @@ struct StrategyView: View {
     @State private var goal: WeightValue
     @State private var current: WeightValue
     @State private var difference: WeightValue
-    @State private var selectedStrategy: Strategy = .steady
+    @State private var selectedStrategy: Strategy = .standard
     
     private var progressResult: String {
         let days = calculateDays(difference: difference, strategy: selectedStrategy)
@@ -79,33 +79,46 @@ struct StrategyView: View {
         let dateString = formatter.string(from: futureDate)
 
         return """
-        You'll reach your goal in \(Int(days)) days \
-        (\(Int(days / 7)) weeks), on \(dateString).
+        Goal can be reached in \(Int(days)) days \
+        (\(Int(days / 7)) weeks) on \(dateString).
         """
     }
     
     var body: some View {
         
-        VStack {
-            HStack(spacing: 0){
-                Text("Strategy: ").fontWeight(.semibold)
-                Picker("Strategy", selection: $selectedStrategy) {
-                    ForEach(Strategy.allCases, id: \.self) { strategy in
-                        Text(strategy.rawValue)
-                            .tag(strategy)
+        VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 0) {
+                
+                HStack {
+                    Text("Strategy")
+                        .font(.headline)
+                    
+                    Picker("Strategy", selection: $selectedStrategy) {
+                        ForEach(Strategy.allCases, id: \.self) { strategy in
+                            Text(strategy.rawValue.capitalized)
+                                .tag(strategy)
+                        }
                     }
+                    
                 }
                 
-                
-                
-                
+                Text(selectedStrategy.description(isLosing: goal.asKilograms < current.asKilograms ))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
-            HStack {
+            
+            Divider()
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Timeline")
+                    .font(.headline)
                 Text(progressResult)
+                    
+                    .font(.body)
             }
-            .padding()
         }
+        .padding(.bottom, 5)
         .smallDataCardStyle()
+       
      
         
         

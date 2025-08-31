@@ -9,9 +9,11 @@
 import SwiftUI
 
 struct AddButton: ButtonStyle {
+    
+    var width: CGFloat = 75
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .frame(width: 75, height: 25)
+            .frame(width: width, height: 25)
             .padding()
             .background(Color.accentColor)
             .foregroundColor(.white).bold()

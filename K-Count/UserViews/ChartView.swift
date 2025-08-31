@@ -27,34 +27,24 @@ struct PeriodPicker: View {
 
     var body: some View {
         HStack {
-            ForEach(Period.allCases, id: \.self) { period in
-                Button(action: {
-                    
-                        selectedPeriod = period
-                    
-                }) {
-                    Text(period.rawValue)
-                        .font(.headline)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(
-                            ZStack {
-                                if selectedPeriod == period {
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color.accentColor)
-                                        .matchedGeometryEffect(id: "background", in: namespace)
-                                }
-                            }
-                        )
-                        .foregroundColor(selectedPeriod == period ? .white : .black)
+            Text("Timeframe")
+                .font(.headline)
+            
+            Picker("Timeframe", selection: $selectedPeriod) {
+                ForEach(Period.allCases, id: \.self) { period in
+                    Text(period.rawValue.capitalized)
+                        .bold()
+                        .tag(period)
+                        
                 }
-                .buttonStyle(.plain)
+           
             }
+            
         }
-        .padding(10)
-        .background(RoundedRectangle(cornerRadius: 8).fill(Color.white))
-        .shadow(radius: 2, x: 0, y: 0.2)
-        .frame(maxWidth: .infinity)
+
+        .smallDataCardStyle()
+        
+        
     }
 }
 
@@ -122,21 +112,29 @@ struct ChartView: View {
         
         PeriodPicker(selectedPeriod: $selectedPeriod)
         
-        VStack {
-       
-
-     
-            ScrollView(.horizontal, showsIndicators: false) {
-                Chart(Array(filteredDays.enumerated()), id: \.offset) { index,day in
-                    
-                    LineMark(x: .value("Year", day.date),
-                             y: .value("Weight", day.weight))
-                    .interpolationMethod(.catmullRom)
-                    
-                    
-                    
-                    
-                    if index.isMultiple(of: annotationStep(for: selectedPeriod)) {
+        
+        if days.isEmpty {
+            Text("Please add data to track your progress!")
+                .frame(maxWidth: .infinity)
+                .smallDataCardStyle()
+               
+        }
+        else {
+            VStack {
+                
+                
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    Chart(Array(filteredDays.enumerated()), id: \.offset) { index,day in
+                        
+                        LineMark(x: .value("Year", day.date),
+                                 y: .value("Weight", day.weight))
+                        .interpolationMethod(.catmullRom)
+                        
+                        
+                        
+                        
+                        if index.isMultiple(of: annotationStep(for: selectedPeriod)) {
                             PointMark(
                                 x: .value("Date", day.date),
                                 y: .value("Weight", day.weight)
@@ -147,59 +145,61 @@ struct ChartView: View {
                                     .font(.caption2)
                             }
                         }
-                    
-                    AreaMark(x: .value("Year", day.date),
+                        
+                        AreaMark(x: .value("Year", day.date),
                                  y: .value("Weight", day.weight))
                         .foregroundStyle(linearGradient)
                         .interpolationMethod(.catmullRom)
-                               
-                    
-                }
-                .frame(width: chartWidth, height: 300)
-            }
-           
-            
-            
-          
-            .padding()
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .day, count: spacingCount)) { value in
-                    
-                    
-                    AxisValueLabel {
-                        if let label = value.as(Date.self) {
-                           
-                         
-                            Text(transformDate(label))
-                                .font(.caption2)
-                                .padding([.top, .leading], 10)
-                        }
+                        
+                        
                     }
-                    AxisGridLine(centered: true, stroke: StrokeStyle(lineWidth: 0.5))
-                        .foregroundStyle(.gray)
+                    .frame(width: chartWidth, height: 300)
                 }
-            }
                 
- 
-            
-            .chartYAxis(.visible)
-            .chartYScale(domain: customDomain)
-            .chartPlotStyle { plotArea in
-                plotArea
-                 
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .border(Color.customGreen)
+                
+                
+                
+                .padding()
+                .chartXAxis {
+                    AxisMarks(values: .stride(by: .day, count: spacingCount)) { value in
+                        
+                        
+                        AxisValueLabel {
+                            if let label = value.as(Date.self) {
+                                
+                                
+                                Text(transformDate(label))
+                                    .font(.caption2)
+                                    .padding([.top, .leading], 10)
+                            }
+                        }
+                        AxisGridLine(centered: true, stroke: StrokeStyle(lineWidth: 0.5))
+                            .foregroundStyle(.gray)
+                    }
+                }
+                
+                
+                
+                .chartYAxis(.visible)
+                .chartYScale(domain: customDomain)
+                .chartPlotStyle { plotArea in
+                    plotArea
+                    
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                       
+                    
+                }
+                
+                
                 
             }
-         
             
             
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            .shadow( radius: 0.5, x: 0, y: 0.5)
         }
-        
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .padding(5)
-        .shadow( radius: 0.5, x: 0, y: 0.5)
     }
     
     private func transformDate (_ date: Date) -> String {
@@ -213,4 +213,8 @@ struct ChartView: View {
 
 #Preview {
     ChartView(days: Day.examples)
+}
+
+#Preview {
+    ChartView(days: [])
 }

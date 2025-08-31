@@ -42,16 +42,21 @@ struct ContentView: View {
            }
            .padding()
            .frame(height: 60)
-           .background(.white)
-           .cornerRadius(20)
-           .shadow(radius: 2, x: 0, y: 1)
+           .background(
+               RoundedRectangle(cornerRadius: 20)
+                   .fill(Color(.secondarySystemGroupedBackground))
+                   .shadow(color: Color.primary.opacity(0.1), radius: 2, x: 0, y: 1)
+           )
+         
            .padding(.horizontal, 35)
-           .ignoresSafeArea(.keyboard, edges: .bottom)
+         
        }
+       .ignoresSafeArea(.keyboard, edges: .bottom)
      
    }
 }
 
 #Preview {
    ContentView()
+        .modelContainer(Day.previewContainer())
 }
