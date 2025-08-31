@@ -6,7 +6,7 @@ struct NewFoodView: View {
     @Query var foods: [Food]
     @State private var foodName: String = ""
     @State private var calories: String = ""
-    @State private var servingType: String = ""
+    @State private var selectedServingType: ServingType = .gram
     @State private var servingSize: String = ""
     @State private var duplicateFoodPresented = false
     @FocusState private var firstFoodNameFieldIsFocused: Bool
@@ -14,63 +14,93 @@ struct NewFoodView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
+    
+    
     var body: some View {
         Form {
             Section("Add a new food") {
                 TextField("Enter food name", text: $foodName)
                     .focused($firstFoodNameFieldIsFocused)
-                TextField("Enter calories ", text: $calories)
+                
+                TextField("Calories per serving", text: $calories)
                     .keyboardType(.decimalPad)
                     .limitDecimals($calories, decimalLimit: 1, prefix: 4)
-                TextField("Enter serving type", text: $servingType)
-                    .autocapitalization(.none)
-                TextField("Enter number of servings", text: $servingSize)
-                    .keyboardType(.decimalPad)
-                    .limitDecimals($servingSize, decimalLimit: 1, prefix: 4)
                 
-                Button {
+                Picker("Serving type", selection: $selectedServingType) {
+                    ForEach(ServingType.allCases, id: \.self) { servingType in
+                        Text(servingType.displayName).tag(servingType)
+                    }
+                }
+                .pickerStyle(.menu)
+                
+                TextField("Serving size", text: $servingSize)
+                    .keyboardType(.decimalPad)
+                    .limitDecimals($servingSize, decimalLimit: 2, prefix: 4)
+                
+                Button(action: {
                     saveFood()
                     resetFields()
-                } label: {
-                    Image(systemName: "plus")
+                }) {
+                    HStack {
+                        Image(systemName: "plus")
+                        Text("Add Food")
+                    }
                 }
                 .buttonStyle(AddButton())
                 .frame(maxWidth: .infinity)
                 .listRowBackground(EmptyView())
-                .disabled(!areFieldsFilled())
-                .alert("Food already exists", isPresented: $duplicateFoodPresented) { }
+                .disabled(!areFieldsValid())
+                .alert("This food already exists", isPresented: $duplicateFoodPresented) {
+                    Button("OK") { }
+                }
             }
-           
         }
         .listRowBackground(Color.clear)
-        .scrollContentBackground(.hidden) // hides the default background
-        
+        .scrollContentBackground(.hidden)
+        .onAppear {
+            firstFoodNameFieldIsFocused = true
+        }
     }
     
-    func saveFood() {
-        let newFood = Food(name: foodName, calories: Double(calories) ?? 0, servingType: servingType)
-        if foods.contains(where: { $0.name == newFood.name }) {
+    private func saveFood() {
+        guard areFieldsValid() else { return }
+        
+        let trimmedName = foodName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let newFood = Food(
+            name: trimmedName,
+            calories: Double(calories) ?? 0,
+            servingType: selectedServingType.rawValue
+        )
+        
+        if foods.contains(where: { $0.name.lowercased() == newFood.name.lowercased() }) {
             duplicateFoodPresented = true
             return
         }
         
         modelContext.insert(newFood)
         foodsAdded.append(FoodEntry(food: newFood, servingSize: Double(servingSize) ?? 0))
+        
+      
     }
     
-    func areFieldsFilled() -> Bool {
-        return !foodName.isEmpty && !calories.isEmpty && !servingType.isEmpty && !servingSize.isEmpty
+    private func areFieldsValid() -> Bool {
+        let trimmedName = foodName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return !trimmedName.isEmpty &&
+               !calories.isEmpty &&
+               Double(calories) != nil &&
+               !servingSize.isEmpty &&
+               Double(servingSize) != nil &&
+               Double(servingSize)! > 0
     }
     
-    func resetFields() {
+    private func resetFields() {
         foodName = ""
         calories = ""
-        servingType = ""
         servingSize = ""
+        selectedServingType = .gram
         firstFoodNameFieldIsFocused = true
     }
 }
-
 
 #Preview {
     NavigationStack {

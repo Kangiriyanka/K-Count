@@ -45,7 +45,8 @@ struct ContentView: View {
            .background(
                RoundedRectangle(cornerRadius: 20)
                    .fill(Color(.secondarySystemGroupedBackground))
-                   .shadow(color: Color.primary.opacity(0.1), radius: 2, x: 0, y: 1)
+                   .shadow(color: Color.primary.opacity(0.1), radius: 1, x: 0, y: -1)
+                   .shadow(color: Color.primary.opacity(0.1), radius: 2, x: 2, y: 2)
            )
          
            .padding(.horizontal, 35)

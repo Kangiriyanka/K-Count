@@ -8,6 +8,15 @@
 import SwiftUI
 struct FoodEntryRow: View {
     let foodEntry: FoodEntry
+    
+    var servingTypePlural: String {
+        let servingType = ServingType(rawValue: foodEntry.food.servingType) ?? .gram
+        
+        return foodEntry.servingSize > 1.0 ?
+        servingType.pluralForm
+        :
+        servingType.rawValue
+    }
     var body: some View {
         
       
@@ -26,14 +35,10 @@ struct FoodEntryRow: View {
                     
                     
                     Text(foodEntry.food.name).bold()
-                    
-                    
-                    foodEntry.servingSize > 1.0 ?
-                    Text("\(stringQuantity) \(foodEntry.food.servingType)s")
+                  
+                    Text("\(stringQuantity) \(servingTypePlural)")
                         .foregroundStyle(.secondary)
-                    :
-                    Text("\(stringQuantity) \(foodEntry.food.servingType)")
-                        .foregroundStyle(.secondary)
+                  
                     
                 }
                 

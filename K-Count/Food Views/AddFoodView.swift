@@ -9,7 +9,9 @@ enum Modes: String, CaseIterable {
 struct CustomPicker: View {
     @Binding var selectedMode: Modes
     @Namespace private var namespace
-
+    @Environment(\.colorScheme) var colorScheme
+    
+   
     var body: some View {
         HStack {
             ForEach(Modes.allCases, id: \.self) { mode in
@@ -30,6 +32,11 @@ struct CustomPicker: View {
                                         .matchedGeometryEffect(id: "background", in: namespace)
                                 }
                             }
+                        )
+                        .foregroundColor(
+                            colorScheme == .dark
+                                ? .white
+                                : (selectedMode == mode ? .white : .black) 
                         )
                        
                 }

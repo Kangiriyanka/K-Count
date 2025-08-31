@@ -33,27 +33,14 @@ class Food: Codable {
     static let exampleSeafood = Food(name: "Salmon", calories: 208, servingType: "100 gram")
     static let exampleBreakfast = Food(name: "Scrambled Egg", calories: 100, servingType: "egg")
     
-    static let previewExamples: [Food] = [
-            example,
-            another_example,
-            exampleFruit,
-            exampleVegetable,
-            exampleDrink,
-            exampleSnack,
-            exampleGrain,
-            exampleProtein,
-            exampleDairy,
-            exampleDessert,
-            exampleSeafood,
-            exampleBreakfast
-        ]
+
     
     @MainActor static func previewContainer() -> ModelContainer {
             let config = ModelConfiguration(isStoredInMemoryOnly: true)
             let container = try! ModelContainer(for: Food.self, configurations: config)
             
             // Add all example foods
-            for food in previewExamples {
+            for food in [exampleDrink, exampleSnack, exampleDairy, exampleSeafood,] {
                 container.mainContext.insert(food)
             }
             

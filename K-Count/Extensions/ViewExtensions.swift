@@ -20,17 +20,26 @@ extension DateFormatter {
 // MARK: - Card Modifiers
 
 struct DataCard: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
     func body(content: Content) -> some View {
+        let isDark = colorScheme == .dark
+        
         content
             .frame(maxWidth: .infinity, minHeight: 50)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .fontWeight(.semibold)
-            .foregroundStyle(.black
+            .foregroundStyle(isDark ? .white.opacity(0.8) : .black)
+            .background(
+                (isDark ? Color.burntOrange.opacity(0.8) : Color.burntOrange.opacity(0.85)),
+                in: RoundedRectangle(cornerRadius: 12)
             )
-            .background(Color.burntOrange.opacity(0.8), in: RoundedRectangle(cornerRadius: 12))
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.burntOrange.opacity(0.3)))
-            .shadow(color: Color.burntOrange.opacity(0.3), radius: 3)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.burntOrange.opacity(isDark ? 0.5 : 0.3))
+            )
+           
     }
 }
 

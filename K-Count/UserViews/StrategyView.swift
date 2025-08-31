@@ -79,7 +79,7 @@ struct StrategyView: View {
         let dateString = formatter.string(from: futureDate)
 
         return """
-        Goal can be reached in \(Int(days)) days \
+        Goal can be reached in about \(Int(days)) days \
         (\(Int(days / 7)) weeks) on \(dateString).
         """
     }

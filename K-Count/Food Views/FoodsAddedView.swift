@@ -56,9 +56,9 @@ struct FoodsAddedView: View {
     }
     
     func getServingSize(entry: FoodEntry) -> String {
-        return entry.servingSize > 1
-        ? String(format: "%0.1f ", entry.servingSize) + entry.food.servingType + "s"
-        : String(format: "%0.f ", entry.servingSize) + entry.food.servingType
+        let servingSize = ServingType(rawValue: entry.food.servingType) ?? .gram
+        return   entry.servingSize > 1 ?   String(format: "%0.1f ", entry.servingSize) + servingSize.pluralForm
+        :   String(format: "%0.1f ", entry.servingSize) + servingSize.rawValue
     }
 }
 
