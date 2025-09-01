@@ -124,7 +124,7 @@ class Day: Codable {
             let config = ModelConfiguration(isStoredInMemoryOnly: true)
             let container = try! ModelContainer(for: Day.self, configurations: config)
             
-            let examples = generateExamples(count: 30)
+            let examples = generateExamples(count: 300)
             for day in examples {
                 container.mainContext.insert(day)
             }

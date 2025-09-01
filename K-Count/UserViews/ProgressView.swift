@@ -77,7 +77,7 @@ struct ProgressView: View {
                                 .stroke(Color.burntOrange, lineWidth: 0.8)
                         )
                         
-                        // To Goal Card - Accent (lighter)
+                      
                         VStack {
                             Text("To Goal")
                                 .italic()

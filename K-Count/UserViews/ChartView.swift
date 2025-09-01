@@ -56,11 +56,12 @@ struct ChartView: View {
    
    
     
-    private var filteredDays: [Day] {
+     private var filteredDays: [Day] {
         Array(days.suffix(selectedPeriod.days))
+            .filter { $0.weight != 0.0 }
     }
     
-    private var customDomain: ClosedRange<Double> {
+    private var customWeightDomain: ClosedRange<Double> {
         let recentWeights = days.suffix(selectedPeriod.days).filter({$0.weight != 0.0}).map{$0.weight}
         
        
@@ -68,19 +69,14 @@ struct ChartView: View {
         guard let min = recentWeights.min(), let max = recentWeights.max() else {
             return userSettings.weight-5...userSettings.weight+5
         }
-        let padding = [(max-min) * 0.1 , 0.4].max() ?? 0.5
+        let padding = [(max-min) * 0.1 , 0.3].max() ?? 0.3
         return (min - padding)...(max + padding)
     }
     
-    private var chartWidth: CGFloat {
-    switch selectedPeriod {
-    case .week: return 350
-    case .month: return 600
-    case .year: return 1200
-    }
-}
+   
+
     
-    private var spacingCount: Int {
+    private var dayOffset: Int {
         switch selectedPeriod {
         case .week: return 1
         case .month: return 5
@@ -88,9 +84,10 @@ struct ChartView: View {
         }
     }
     
+    //
     private func annotationStep(for period: Period) -> Int {
         switch selectedPeriod {
-        case .week: return 1   
+        case .week: return 1
         case .month: return 5
         case .year: return 30
         }
@@ -102,7 +99,7 @@ struct ChartView: View {
         gradient: Gradient(colors: [
             Color.accentColor.opacity(0.4),
             Color.accentColor.opacity(0.3),
-            Color.white.opacity(0.2) // Even more subtle
+            Color.white.opacity(0.2)
         ]),
         startPoint: .top,
         endPoint: .bottom
@@ -113,28 +110,24 @@ struct ChartView: View {
         PeriodPicker(selectedPeriod: $selectedPeriod)
         
         
-        if days.isEmpty {
-            Text("Please add data to track your progress!")
-                .frame(maxWidth: .infinity)
-                .smallDataCardStyle()
-               
-        }
-        else {
+
+   
             VStack {
                 
                 
                 
-                ScrollView(.horizontal, showsIndicators: false) {
+              
                     Chart(Array(filteredDays.enumerated()), id: \.offset) { index,day in
                         
-                        LineMark(x: .value("Year", day.date),
+                        LineMark(x: .value("Date", day.date),
                                  y: .value("Weight", day.weight))
                         .interpolationMethod(.catmullRom)
                         
                         
                         
-                        
-                        if index.isMultiple(of: annotationStep(for: selectedPeriod)) {
+                        // Annotate based on the period
+                        // isMultiple is pretty cool
+                        if (index % annotationStep(for: selectedPeriod)) == 0 {
                             PointMark(
                                 x: .value("Date", day.date),
                                 y: .value("Weight", day.weight)
@@ -153,7 +146,8 @@ struct ChartView: View {
                         
                         
                     }
-                    .frame(width: chartWidth, height: 300)
+                    .frame(height: 300)
+                   
                 }
                 
                 
@@ -161,7 +155,9 @@ struct ChartView: View {
                 
                 .padding()
                 .chartXAxis {
-                    AxisMarks(values: .stride(by: .day, count: spacingCount)) { value in
+               
+                    AxisMarks(preset: .aligned, values: .stride(by: .day, count: dayOffset)) { value in
+                        
                         
                         
                         AxisValueLabel {
@@ -173,33 +169,50 @@ struct ChartView: View {
                                     .padding([.top, .leading], 10)
                             }
                         }
-                        AxisGridLine(centered: true, stroke: StrokeStyle(lineWidth: 0.5))
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
                             .foregroundStyle(.gray)
                     }
                 }
+        
+                .chartYAxis {
+                    AxisMarks(values: [customWeightDomain.lowerBound, customWeightDomain.upperBound]) { value in
+                        AxisValueLabel {
+                            if let weight = value.as(Double.self) {
+                                let weightValue = WeightValue.metric(weight)
+                                Text(weightValue.graphDisplay(for: userSettings.weightPreference))
+                                    .font(.caption2)
+                            }
+                        }
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
+                            .foregroundStyle(.gray)
+                    }
+                }
+        
+                
+             
                 
                 
-                
-                .chartYAxis(.visible)
-                .chartYScale(domain: customDomain)
+             
+               
+                .chartYScale(domain: customWeightDomain)
                 .chartPlotStyle { plotArea in
                     plotArea
+                        .background(.mint.opacity(0.03))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                       
-                    
+                                            
                 }
+              
                 
                 
                 
-            }
+            .chartScrollableAxes(.horizontal)
             
             
             .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            
-            .shadow( radius: 0.5, x: 0, y: 0.5)
-        }
+  
+           
+        
     }
     
     private func transformDate (_ date: Date) -> String {
@@ -213,6 +226,7 @@ struct ChartView: View {
 
 #Preview {
     ChartView(days: Day.examples)
+    
 }
 
 #Preview {
