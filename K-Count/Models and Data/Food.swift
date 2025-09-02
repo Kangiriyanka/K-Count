@@ -15,6 +15,11 @@ class Food: Codable {
     var calories: Double
     var servingType: String
     
+    /// Establish the relationship between Food and FoodEntry
+    /// If you delete a Food, it will delete all the FoodEntries.
+    /// Foods can be referenced inside many entries
+    @Relationship(deleteRule: .cascade, inverse: \FoodEntry.food) var entries: [FoodEntry] = []
+    
     enum CodingKeys: String, CodingKey {
            case name, calories, servingType
        }

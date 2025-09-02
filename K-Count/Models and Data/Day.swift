@@ -28,8 +28,9 @@ class Day: Codable {
         return String(format: "%0.1f", self.weight) 
     }
     
-
-    @Relationship(deleteRule: .cascade) var foodEntries = [FoodEntry]()
+    /// Deleting a day will delete all its food entries, but not vice-versa.
+    /// Keep in mind that this doesn't specifiy the TYPE of relationship, that's done in FoodEntry
+    @Relationship(deleteRule: .cascade, inverse: \FoodEntry.day  ) var foodEntries = [FoodEntry]()
     
     
     var csvDate: String {

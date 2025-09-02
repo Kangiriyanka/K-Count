@@ -13,6 +13,8 @@ struct EditFoodDataView: View {
     @State private var foodName: String
     @State private var calories: String
     @State private var servingType: String
+    @State private var isPresentingConfirm: Bool = false
+    @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
     @FocusState private var firstFoodNameFieldIsFocused: Bool
@@ -31,9 +33,33 @@ struct EditFoodDataView: View {
                         .autocapitalization(.none)
                     
                     
+                    
+                 
+                    
+                    
            
                     
                 }
+           
+                VStack(alignment: .center) {
+                    Button("Delete", role: .destructive) {
+                        isPresentingConfirm = true
+                        
+                    }
+                 
+                    .confirmationDialog("Are you sure?",
+                                        isPresented: $isPresentingConfirm) {
+                        Button("Delete this food permanently?", role: .destructive) {
+                            deleteFood(food: food )
+                        }
+                    }
+                                        .disabled(isDisabled())
+                                        .fontWeight(.semibold)
+                }
+                
+                .buttonStyle(BorderedProminentButtonStyle())
+                
+                .frame(maxWidth: .infinity)
                 
             }
             
@@ -52,6 +78,8 @@ struct EditFoodDataView: View {
                     .fontWeight(.semibold)
                  
                 }
+                
+               
             }
         }
         
@@ -68,6 +96,16 @@ struct EditFoodDataView: View {
         food.calories = Double(calories) ?? 0.0
         food.servingType = servingType
         
+    }
+    
+    private func deleteFood(food: Food) {
+        do {
+            try modelContext.delete(food)
+            try modelContext.save() // Don't forget to save changes
+        } catch {
+            print("Failed to delete food: \(error.localizedDescription)")
+           
+        }
     }
     
     private func isDisabled() -> Bool {

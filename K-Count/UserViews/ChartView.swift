@@ -61,6 +61,8 @@ struct ChartView: View {
             .filter { $0.weight != 0.0 }
     }
     
+    /// Y should contain all the values in the day that are not nil
+    ///
     private var customWeightDomain: ClosedRange<Double> {
         let recentWeights = days.suffix(selectedPeriod.days).filter({$0.weight != 0.0}).map{$0.weight}
         
@@ -69,22 +71,14 @@ struct ChartView: View {
         guard let min = recentWeights.min(), let max = recentWeights.max() else {
             return userSettings.weight-5...userSettings.weight+5
         }
-        let padding = [(max-min) * 0.1 , 0.3].max() ?? 0.3
+        let padding = [(max-min) * 0.1 , 0.5].max() ?? 0.5
         return (min - padding)...(max + padding)
     }
     
    
 
-    
-    private var dayOffset: Int {
-        switch selectedPeriod {
-        case .week: return 1
-        case .month: return 5
-        case .year: return 30
-        }
-    }
-    
-    //
+
+ 
     private func annotationStep(for period: Period) -> Int {
         switch selectedPeriod {
         case .week: return 1
@@ -140,9 +134,11 @@ struct ChartView: View {
                         }
                         
                         AreaMark(x: .value("Year", day.date),
-                                 y: .value("Weight", day.weight))
+                                 y: .value("Weight", day.weight)
+                        )
                         .foregroundStyle(linearGradient)
                         .interpolationMethod(.catmullRom)
+                        
                         
                         
                     }
@@ -156,7 +152,7 @@ struct ChartView: View {
                 .padding()
                 .chartXAxis {
                
-                    AxisMarks(preset: .aligned, values: .stride(by: .day, count: dayOffset)) { value in
+                    AxisMarks(preset: .aligned, values: filteredDays.map {$0.date}) { value in
                         
                         
                         
@@ -184,7 +180,7 @@ struct ChartView: View {
                             }
                         }
                         AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(.gray.opacity(0.5))
                     }
                 }
         

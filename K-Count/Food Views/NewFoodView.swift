@@ -43,10 +43,10 @@ struct NewFoodView: View {
                 }) {
                     HStack {
                         Image(systemName: "plus")
-                        Text("Add Food")
+                        Text("Create Food")
                     }
                 }
-                .buttonStyle(AddButton())
+                .buttonStyle(AddButton(width: 150))
                 .frame(maxWidth: .infinity)
                 .listRowBackground(EmptyView())
                 .disabled(!areFieldsValid())

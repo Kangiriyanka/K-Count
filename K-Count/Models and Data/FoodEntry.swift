@@ -13,9 +13,15 @@ class FoodEntry: Codable {
     
     
     @Attribute(.unique) var id: UUID = UUID()
+    /// Entries reference to Foods and belong inside Days.
+    /// Day is optional, because we need to be able to create FoodEntries before directly attaching them todays.
+    /// The relationships should only be specified on  one side, and they're in the parent.
+    var day: Day?
     var food: Food
+  
     var servingSize: Double
-    @Relationship(inverse: \Day.foodEntries) var day: Day?
+    
+
     
     enum CodingKeys: String, CodingKey {
            case food, servingSize
