@@ -105,8 +105,8 @@ struct FoodView: View {
     private func updateFoodEntries() {
         
         
-        if foodsAdded.contains(where: {$0.food.name == food.name})  {
-            foodsAdded.first(where: {$0.food.name == food.name})?.servingSize = Double(servingSize) ?? 1
+        if foodsAdded.contains(where: {$0.food?.name == food.name})  {
+            foodsAdded.first(where: {$0.food?.name == food.name})?.servingSize = Double(servingSize) ?? 1
             
         } else {
             

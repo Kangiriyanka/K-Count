@@ -11,6 +11,7 @@ import SwiftData
 @Model
 class Food: Codable {
     
+    @Attribute(.unique) var id: UUID = UUID()
     var name: String
     var calories: Double
     var servingType: String

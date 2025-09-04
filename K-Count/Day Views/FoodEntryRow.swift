@@ -1,5 +1,3 @@
-
-
 // A row containing the food name, the serving size under it and the calories on the extreme right.
 // Serving sizes are represented with 1 decimal and calories with whole numbers
 // Adds plural to serving type if the serving size is bigger than a unit.
@@ -10,63 +8,48 @@ struct FoodEntryRow: View {
     let foodEntry: FoodEntry
     
     var servingTypePlural: String {
-        let servingType = ServingType(rawValue: foodEntry.food.servingType) ?? .gram
+        guard let food = foodEntry.food else { return "" }
+        let servingType = ServingType(rawValue: food.servingType) ?? .gram
         
         return foodEntry.servingSize > 1.0 ?
         servingType.pluralForm
         :
         servingType.rawValue
     }
+    
     var body: some View {
-        
-      
-        
-        
-        
-        HStack {
-            
+
+        if let food = foodEntry.food {
             HStack {
-                
-                let stringQuantity =  String(format: "%0.1f", foodEntry.servingSize)
-                let totalCalories = String(format: "%0.0f", foodEntry.servingSize * foodEntry.food.calories)
-                
-                
-                VStack(alignment: .leading) {
+                HStack {
+                    let stringQuantity = String(format: "%0.1f", foodEntry.servingSize)
+                    let totalCalories = String(format: "%0.0f", foodEntry.servingSize * food.calories)
                     
+                    VStack(alignment: .leading) {
+                        Text(food.name).bold()
+                        Text("\(stringQuantity) \(servingTypePlural)")
+                            .foregroundStyle(.secondary)
+                    }
                     
-                    Text(foodEntry.food.name).bold()
-                  
-                    Text("\(stringQuantity) \(servingTypePlural)")
+                    Spacer()
+                    
+                    Text(totalCalories)
                         .foregroundStyle(.secondary)
-                  
-                    
                 }
-                
-                
-                Spacer()
-                
-                Text(totalCalories)
-                    .foregroundStyle(.secondary)
             }
-            
+            .overlay(
+                NavigationLink(destination: EditPortionsView(foodEntry: foodEntry)) {}
+                    .opacity(0)
+            )
+        } else {
+            // Fallback for invalid entries
+            Text("Invalid food entry")
+                .foregroundStyle(.red)
         }
-        
-        
-        
-        
-        .overlay(
-            
-            NavigationLink(destination: EditPortionsView(foodEntry: foodEntry)) {}
-                .opacity(0)
-        )
     }
-    
-    
-    
-    
 }
+
 #Preview {
     let example = FoodEntry.example
     FoodEntryRow(foodEntry: example)
-   
 }

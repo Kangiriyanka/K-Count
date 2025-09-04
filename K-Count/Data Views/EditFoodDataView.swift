@@ -12,7 +12,7 @@ struct EditFoodDataView: View {
     
     @State private var foodName: String
     @State private var calories: String
-    @State private var servingType: String
+    @State private var servingType: ServingType
     @State private var isPresentingConfirm: Bool = false
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
@@ -29,37 +29,23 @@ struct EditFoodDataView: View {
                     TextField("Enter calories ", text: $calories)
                         .keyboardType(.decimalPad)
                         .limitDecimals($calories, decimalLimit: 1, prefix: 4)
-                    TextField("Enter serving type", text: $servingType)
-                        .autocapitalization(.none)
-                    
-                    
-                    
-                 
-                    
-                    
-           
-                    
-                }
-           
-                VStack(alignment: .center) {
-                    Button("Delete", role: .destructive) {
-                        isPresentingConfirm = true
-                        
-                    }
-                 
-                    .confirmationDialog("Are you sure?",
-                                        isPresented: $isPresentingConfirm) {
-                        Button("Delete this food permanently?", role: .destructive) {
-                            deleteFood(food: food )
+                    Picker("Serving type", selection: $servingType) {
+                        ForEach(ServingType.allCases, id: \.self) { servingType in
+                            Text(servingType.displayName).tag(servingType)
                         }
                     }
-                                        .disabled(isDisabled())
-                                        .fontWeight(.semibold)
+                    
+                    
+                    
+                 
+                    
+                    
+           
+                    
                 }
+           
                 
-                .buttonStyle(BorderedProminentButtonStyle())
-                
-                .frame(maxWidth: .infinity)
+        
                 
             }
             
@@ -79,6 +65,23 @@ struct EditFoodDataView: View {
                  
                 }
                 
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Menu {
+                 
+                        
+                        Button("Delete", systemImage: "trash", role: .destructive) {
+                            isPresentingConfirm = true
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+                    .confirmationDialog("Are you sure?", isPresented: $isPresentingConfirm) {
+                         Button("Delete this food permanently?", role: .destructive) {
+                             deleteFood(food: food)
+                         }
+                     }
+                }
+                
                
             }
         }
@@ -94,14 +97,15 @@ struct EditFoodDataView: View {
         
         food.name = foodName
         food.calories = Double(calories) ?? 0.0
-        food.servingType = servingType
+        food.servingType = servingType.rawValue
         
     }
     
-    private func deleteFood(food: Food) {
+    private func deleteFood(food: Food)  {
         do {
             try modelContext.delete(food)
-            try modelContext.save() // Don't forget to save changes
+            try modelContext.save()
+            dismiss()
         } catch {
             print("Failed to delete food: \(error.localizedDescription)")
            
@@ -109,7 +113,7 @@ struct EditFoodDataView: View {
     }
     
     private func isDisabled() -> Bool {
-        if foodName.isEmpty || calories.isEmpty || servingType.isEmpty {
+        if foodName.isEmpty || calories.isEmpty  {
             return true
         }
         return false
@@ -119,7 +123,7 @@ struct EditFoodDataView: View {
         self.food = food
         self.foodName = food.name
         self.calories = String(food.calories)
-        self.servingType = food.servingType
+        self.servingType = ServingType(rawValue: food.servingType)  ?? .gram
         
     }
 }

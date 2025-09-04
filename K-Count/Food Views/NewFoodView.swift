@@ -9,7 +9,7 @@ struct NewFoodView: View {
     @State private var selectedServingType: ServingType = .gram
     @State private var servingSize: String = ""
     @State private var duplicateFoodPresented = false
-    @FocusState private var firstFoodNameFieldIsFocused: Bool
+   
     @Binding var foodsAdded: [FoodEntry]
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -20,7 +20,7 @@ struct NewFoodView: View {
         Form {
             Section("Add a new food") {
                 TextField("Enter food name", text: $foodName)
-                    .focused($firstFoodNameFieldIsFocused)
+          
                 
                 TextField("Calories per serving", text: $calories)
                     .keyboardType(.decimalPad)
@@ -57,9 +57,7 @@ struct NewFoodView: View {
         }
         .listRowBackground(Color.clear)
         .scrollContentBackground(.hidden)
-        .onAppear {
-            firstFoodNameFieldIsFocused = true
-        }
+      
     }
     
     private func saveFood() {
@@ -98,7 +96,7 @@ struct NewFoodView: View {
         calories = ""
         servingSize = ""
         selectedServingType = .gram
-        firstFoodNameFieldIsFocused = true
+      
     }
 }
 

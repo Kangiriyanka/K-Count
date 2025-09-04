@@ -43,10 +43,11 @@ class Day: Codable {
     var foodsEatentoCSV: String {
        
         var result: String = ""
+        
         foodEntries.forEach { entry in
             
-            
-            let foodData = "(\(entry.food.name)  \(entry.food.calories) x \(entry.servingSize) =   \(entry.food.calories * entry.servingSize)) "
+            guard let food = entry.food else { return }
+            let foodData = "(\(food.name)  \(food.calories) x \(entry.servingSize) =   \(food.calories * entry.servingSize)) "
             result += foodData
             
         }
@@ -59,7 +60,9 @@ class Day: Codable {
     var totalCalories: Double {
         var total: Double = 0
         foodEntries.forEach { entry in
-            total += entry.food.calories * entry.servingSize
+            
+            guard let food =  entry.food else {return}
+            total += food.calories * entry.servingSize
             
         }
         return total

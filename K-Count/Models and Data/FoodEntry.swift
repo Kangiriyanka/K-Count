@@ -17,7 +17,7 @@ class FoodEntry: Codable {
     /// Day is optional, because we need to be able to create FoodEntries before directly attaching them todays.
     /// The relationships should only be specified on  one side, and they're in the parent.
     var day: Day?
-    var food: Food
+    var food: Food?
   
     var servingSize: Double
     
@@ -28,7 +28,10 @@ class FoodEntry: Codable {
        }
     
     var totalCalories: Double {
-        food.calories * servingSize
+        guard let food = food else {
+            return 0 // or some default value if food is nil
+        }
+        return food.calories * servingSize
     }
     
     

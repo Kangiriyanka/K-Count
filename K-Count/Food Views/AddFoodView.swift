@@ -189,14 +189,14 @@ struct AddFoodView: View {
         
         
         for entry in foodsAdded {
-            if !day.foodEntries.contains(where: {$0.food.name == entry.food.name}) {
+            if !day.foodEntries.contains(where: {$0.food == entry.food}) {
                 //*** Here
                 entry.day = day
                 day.foodEntries.append(entry)
             }
             else {
                 
-                day.foodEntries.first(where: {$0.food.name == entry.food.name})?.servingSize = entry.servingSize
+                day.foodEntries.first(where: {$0.food == entry.food})?.servingSize = entry.servingSize
             }
             
         }
