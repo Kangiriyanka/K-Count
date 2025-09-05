@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct EditFoodDataView: View {
     var food: Food
@@ -23,7 +24,7 @@ struct EditFoodDataView: View {
         
         NavigationStack {
             Form {
-                Section("Edit \(food.name)") {
+                Section("Edit ") {
                     TextField("Enter food name", text: $foodName)
                         .focused($firstFoodNameFieldIsFocused)
                     TextField("Enter calories ", text: $calories)
@@ -36,25 +37,13 @@ struct EditFoodDataView: View {
                     }
                     
                     
-                    
-                 
-                    
-                    
-           
-                    
                 }
-           
-                
-        
-                
             }
             
             .listRowBackground(Color.clear)
-            .scrollContentBackground(.hidden) 
+            .scrollContentBackground(.hidden)
             
             .toolbar {
-              
-                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
                         saveFood()
@@ -62,13 +51,10 @@ struct EditFoodDataView: View {
                     }
                     .disabled(isDisabled())
                     .fontWeight(.semibold)
-                 
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
-                 
-                        
                         Button("Delete", systemImage: "trash", role: .destructive) {
                             isPresentingConfirm = true
                         }
@@ -81,35 +67,32 @@ struct EditFoodDataView: View {
                          }
                      }
                 }
-                
-               
             }
         }
-        
-    
-  
-        
     }
     
-    
-    
     private func saveFood() {
-        
+        guard !foodName.isEmpty else { return }
         food.name = foodName
         food.calories = Double(calories) ?? 0.0
         food.servingType = servingType.rawValue
         
+        
+        
     }
     
-    private func deleteFood(food: Food)  {
+    private func deleteFood(food: Food) {
+        modelContext.delete(food)
+        
+       
         do {
-            try modelContext.delete(food)
-            try modelContext.save()
+           
             dismiss()
         } catch {
-            print("Failed to delete food: \(error.localizedDescription)")
-           
+        print("Error deleting food: \(error.localizedDescription)")
         }
+        
+    
     }
     
     private func isDisabled() -> Bool {
@@ -120,14 +103,13 @@ struct EditFoodDataView: View {
     }
     
     init(food: Food) {
+       
         self.food = food
         self.foodName = food.name
         self.calories = String(food.calories)
-        self.servingType = ServingType(rawValue: food.servingType)  ?? .gram
-        
+        self.servingType = ServingType(rawValue: food.servingType) ?? .gram
     }
 }
-
 
 #Preview {
     EditFoodDataView(food: Food.exampleDairy)

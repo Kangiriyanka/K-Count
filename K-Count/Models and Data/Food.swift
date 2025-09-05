@@ -22,7 +22,7 @@ class Food: Codable {
     @Relationship(deleteRule: .cascade, inverse: \FoodEntry.food) var entries: [FoodEntry] = []
     
     enum CodingKeys: String, CodingKey {
-           case name, calories, servingType
+           case id, name, calories, servingType
        }
     
     
@@ -57,6 +57,7 @@ class Food: Codable {
     
     
     init(name: String, calories: Double, servingType: String) {
+        
         self.name = name
         self.calories = calories
         self.servingType = servingType
@@ -65,6 +66,7 @@ class Food: Codable {
     
     required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.id = try container.decode(UUID.self, forKey: .id)
             self.name = try container.decode(String.self, forKey: .name)
             self.calories = try container.decode(Double.self, forKey: .calories)
             self.servingType = try container.decode(String.self, forKey: .servingType)
@@ -73,6 +75,7 @@ class Food: Codable {
     
     func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(id, forKey: .id)
             try container.encode(name, forKey: .name)
             try container.encode(calories, forKey: .calories)
             try container.encode(servingType, forKey: .servingType)

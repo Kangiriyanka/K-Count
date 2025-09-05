@@ -24,12 +24,12 @@ class FoodEntry: Codable {
 
     
     enum CodingKeys: String, CodingKey {
-           case food, servingSize
+           case id, food, servingSize
        }
     
     var totalCalories: Double {
         guard let food = food else {
-            return 0 // or some default value if food is nil
+            return 0
         }
         return food.calories * servingSize
     }
@@ -43,6 +43,7 @@ class FoodEntry: Codable {
     
     required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.id = try container.decode(UUID.self, forKey: .id)
             self.food = try container.decode(Food.self, forKey: .food)
             self.servingSize = try container.decode(Double.self, forKey: .servingSize)
         }
@@ -50,6 +51,7 @@ class FoodEntry: Codable {
     
     func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(id, forKey: .id)
             try container.encode(food, forKey: .food)
             try container.encode(servingSize, forKey: .servingSize)
 

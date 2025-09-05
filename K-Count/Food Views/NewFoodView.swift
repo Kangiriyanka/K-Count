@@ -66,7 +66,7 @@ struct NewFoodView: View {
         let trimmedName = foodName.trimmingCharacters(in: .whitespacesAndNewlines)
         let newFood = Food(
             name: trimmedName,
-            calories: Double(calories) ?? 0,
+            calories: Double(calories) ?? 0.0,
             servingType: selectedServingType.rawValue
         )
         
@@ -76,6 +76,7 @@ struct NewFoodView: View {
         }
         
         modelContext.insert(newFood)
+        try? modelContext.save() 
         foodsAdded.append(FoodEntry(food: newFood, servingSize: Double(servingSize) ?? 0))
         
       

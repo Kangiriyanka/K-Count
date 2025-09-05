@@ -13,12 +13,27 @@ struct ContentView: View {
    
    var body: some View {
        
+//#if targetEnvironment(simulator)
+//SwiftDataDebugView()
+//  .tabItem {
+//      Image(systemName: "ladybug")
+//      Text("Debug")
+//  }
+//  .tag(3)
+//#endif
+       
        ZStack(alignment: .bottom) {
            TabView(selection: $selectedTab) {
                LogView().tag(0)
                ProgressView().tag(1)
                DataView().tag(2)
+
+               
            }
+          
+
+               
+      
          
            
            // Custom Tab Bar

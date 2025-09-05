@@ -30,6 +30,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		827C6CC82E6A696000E0D9D7 /* Debug */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Debug;
+			sourceTree = "<group>";
+		};
 		82F441742CE1211800F2D24B /* K-Count */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "K-Count";
@@ -75,6 +80,7 @@
 		82F441692CE1211800F2D24B = {
 			isa = PBXGroup;
 			children = (
+				827C6CC82E6A696000E0D9D7 /* Debug */,
 				82F441742CE1211800F2D24B /* K-Count */,
 				82F441852CE1211900F2D24B /* K-CountTests */,
 				82F4418F2CE1211900F2D24B /* K-CountUITests */,
@@ -108,6 +114,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				827C6CC82E6A696000E0D9D7 /* Debug */,
 				82F441742CE1211800F2D24B /* K-Count */,
 			);
 			name = "K-Count";

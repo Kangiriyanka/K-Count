@@ -34,13 +34,9 @@ struct EditDayDataView: View {
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                         
-                            .focused($isWeightFocused)
+                          
                             .limitDecimals($weightInput, decimalLimit: 1, prefix: 3)
-                            .onAppear {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    isWeightFocused = true
-                                }
-                            }
+                          
                         
                         Text(userSettings.weightPreference == .metric ? "kg" : "lbs")
                             .foregroundColor(.secondary)
