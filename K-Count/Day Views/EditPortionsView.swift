@@ -10,7 +10,7 @@ struct EditPortionsView: View {
     let foodEntry: FoodEntry
     
     var body: some View {
-        if let food = foodEntry.food {
+        let food = foodEntry.food
             NavigationStack {
                 VStack(alignment: .leading) {
                     Text(food.name).font(.title).bold()
@@ -59,14 +59,12 @@ struct EditPortionsView: View {
             }
             .navigationTitle("Edit \(food.name)")
             .navigationBarTitleDisplayMode(.inline)
-        } else {
-            Text("Invalid food entry")
-                .foregroundStyle(.red)
         }
-    }
+    
     
     func calculateCalories() {
-        if let food = foodEntry.food, let servingSize = Double(rawServingSize) {
+        let food = foodEntry.food
+        if let servingSize = Double(rawServingSize) {
             totalCalories = servingSize * food.calories
             self.servingSize = servingSize
         }
@@ -75,7 +73,7 @@ struct EditPortionsView: View {
     init(foodEntry: FoodEntry) {
         self.foodEntry = foodEntry
         self.servingSize = foodEntry.servingSize
-        self.totalCalories = foodEntry.servingSize * (foodEntry.food?.calories ?? 0)
+        self.totalCalories = foodEntry.servingSize * (foodEntry.food.calories )
         _rawServingSize = State(initialValue: String(foodEntry.servingSize))
     }
 }

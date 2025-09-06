@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 enum Strategy: String, CaseIterable {
     case steady
     case standard

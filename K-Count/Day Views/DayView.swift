@@ -71,8 +71,6 @@ struct DayView: View {
           
             
             .listRowSpacing(10)
-           
-           
             .navigationTitle(day.formattedDate)
             .navigationBarTitleDisplayMode(.inline)
           
@@ -85,8 +83,7 @@ struct DayView: View {
                         showingAddFoodSheet = true
                     }) {
                       
-                            // Base Button Content
-                            
+                       
                             Image(systemName: "fork.knife")
                             
                     
@@ -116,8 +113,9 @@ struct DayView: View {
             }
                     
                 day.foodEntries.remove(atOffsets: offsets)
-                
             }
+        
+        
         }
         
         

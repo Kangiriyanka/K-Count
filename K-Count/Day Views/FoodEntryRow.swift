@@ -8,7 +8,7 @@ struct FoodEntryRow: View {
     let foodEntry: FoodEntry
     
     var servingTypePlural: String {
-        guard let food = foodEntry.food else { return "" }
+        let food = foodEntry.food
         let servingType = ServingType(rawValue: food.servingType) ?? .gram
         
         return foodEntry.servingSize > 1.0 ?
@@ -19,7 +19,7 @@ struct FoodEntryRow: View {
     
     var body: some View {
 
-        if let food = foodEntry.food {
+        let food = foodEntry.food
             HStack {
                 HStack {
                     let stringQuantity = String(format: "%0.1f", foodEntry.servingSize)
@@ -41,11 +41,7 @@ struct FoodEntryRow: View {
                 NavigationLink(destination: EditPortionsView(foodEntry: foodEntry)) {}
                     .opacity(0)
             )
-        } else {
-            // Fallback for invalid entries
-            Text("Invalid food entry")
-                .foregroundStyle(.red)
-        }
+       
     }
 }
 

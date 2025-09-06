@@ -9,9 +9,9 @@ import Foundation
 import SwiftData
 
 @Model
-class Food: Codable {
+final class Food: Codable {
     
-    @Attribute(.unique) var id: UUID = UUID()
+
     var name: String
     var calories: Double
     var servingType: String
@@ -19,7 +19,7 @@ class Food: Codable {
     /// Establish the relationship between Food and FoodEntry
     /// If you delete a Food, it will delete all the FoodEntries.
     /// Foods can be referenced inside many entries
-    @Relationship(deleteRule: .cascade, inverse: \FoodEntry.food) var entries: [FoodEntry] = []
+    @Relationship(inverse: \FoodEntry.food) var entries: [FoodEntry] = []
     
     enum CodingKeys: String, CodingKey {
            case id, name, calories, servingType
@@ -64,9 +64,9 @@ class Food: Codable {
     }
     
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.id = try container.decode(UUID.self, forKey: .id)
+         
             self.name = try container.decode(String.self, forKey: .name)
             self.calories = try container.decode(Double.self, forKey: .calories)
             self.servingType = try container.decode(String.self, forKey: .servingType)
@@ -75,7 +75,6 @@ class Food: Codable {
     
     func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(id, forKey: .id)
             try container.encode(name, forKey: .name)
             try container.encode(calories, forKey: .calories)
             try container.encode(servingType, forKey: .servingType)

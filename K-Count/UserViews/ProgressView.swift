@@ -110,12 +110,7 @@ struct ProgressView: View {
                                 withAnimation(.spring(response: 0.4, dampingFraction: 0.85, blendDuration: 0.5)) {
                                     showStrategyView.toggle()
                                     
-                                    
-                                    
-                                  
-                        
-                                      
-                                   
+
                                 }
                              
                                 

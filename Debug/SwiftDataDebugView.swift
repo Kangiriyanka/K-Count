@@ -11,7 +11,7 @@ struct SwiftDataDebugView: View {
                 Section("All Foods (\(foods.count))") {
                     ForEach(foods, id: \.id) { food in
                         VStack(alignment: .leading) {
-                            Text("ID: \(food.id.uuidString.prefix(8))...")
+                  
                             Text("Name: \(food.name)")
                                 .foregroundColor(food.name.isEmpty ? .red : .primary)
                             Text("Calories: \(food.calories)")

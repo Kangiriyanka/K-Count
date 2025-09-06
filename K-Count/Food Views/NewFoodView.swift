@@ -47,6 +47,7 @@ struct NewFoodView: View {
                     }
                 }
                 .buttonStyle(AddButton(width: 150))
+                .padding()
                 .frame(maxWidth: .infinity)
                 .listRowBackground(EmptyView())
                 .disabled(!areFieldsValid())
@@ -55,6 +56,7 @@ struct NewFoodView: View {
                 }
             }
         }
+        .padding(.bottom, 20)
         .listRowBackground(Color.clear)
         .scrollContentBackground(.hidden)
       

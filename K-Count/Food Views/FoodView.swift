@@ -103,21 +103,12 @@ struct FoodView: View {
     // If the food is already in the FoodEntries, just update the portions
     // Otherwise create a new FoodEntry
     private func updateFoodEntries() {
-        
-        
-        if foodsAdded.contains(where: {$0.food?.name == food.name})  {
-            foodsAdded.first(where: {$0.food?.name == food.name})?.servingSize = Double(servingSize) ?? 1
-            
+        if let existingIndex = foodsAdded.firstIndex(where: {$0.food.name == food.name}) {
+            // Replace the entire entry instead of mutating it
+            foodsAdded[existingIndex] = FoodEntry(food: food, servingSize: Double(servingSize) ?? 1)
         } else {
-            
-            foodsAdded.append(
-        
-                    FoodEntry(food: food, servingSize: Double(servingSize) ?? 1)
-            
-            )
+            foodsAdded.append(FoodEntry(food: food, servingSize: Double(servingSize) ?? 1))
         }
-        
-        
     }
 
     init(food: Food, foodsAdded: Binding<[FoodEntry]>) {

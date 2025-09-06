@@ -7,7 +7,6 @@
 
 import Foundation
 
-//
 
 extension UserSettings: RawRepresentable {
     // The raw value is what is stored in AppStorage.

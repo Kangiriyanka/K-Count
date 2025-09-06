@@ -14,8 +14,6 @@ enum TabbedItems: Int, CaseIterable{
     case export
 
 
-  
-    
     var title: String {
         switch self {
         case .day:

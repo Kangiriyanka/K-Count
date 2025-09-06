@@ -14,18 +14,20 @@ struct KCountTests {
         let container = try ModelContainer(for: Food.self, FoodEntry.self, configurations: config)
         let modelContext = container.mainContext
         
-        // Create food with entries
+        // Create food
         let food = Food(name: "Test Food", calories: 100, servingType: "piece")
+        modelContext.insert(food)
+        
+        // Create entries and set the to-one relationship explicitly
         let entry1 = FoodEntry(food: food, servingSize: 1.0)
         let entry2 = FoodEntry(food: food, servingSize: 2.0)
-        
-        food.entries.append(entry1)
-        food.entries.append(entry2)
-        
-        // Insert into context
-        modelContext.insert(food)
+        food.entries = [entry1,entry2]
         modelContext.insert(entry1)
         modelContext.insert(entry2)
+        
+        // Add entries to the food's entries array (inverse relationship)
+        food.entries = [entry1, entry2]
+        
         try modelContext.save()
         
         // Verify setup
@@ -34,7 +36,10 @@ struct KCountTests {
         #expect(allFoods.count == 1)
         #expect(allEntries.count == 2)
         
-        // Test the problematic deletion
+        // Test cascade deletion
+        for entry in food.entries {
+            modelContext.delete(entry)
+        }
         modelContext.delete(food)
         try modelContext.save()
         

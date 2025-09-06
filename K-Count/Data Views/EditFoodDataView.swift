@@ -82,17 +82,20 @@ struct EditFoodDataView: View {
     }
     
     private func deleteFood(food: Food) {
-        modelContext.delete(food)
-        
-       
-        do {
-           
-            dismiss()
-        } catch {
-        print("Error deleting food: \(error.localizedDescription)")
+        // Manually delete all entries first
+        let entriesToDelete = food.entries
+        for entry in entriesToDelete {
+            modelContext.delete(entry)
         }
         
-    
+        // Save the entry deletions
+        try? modelContext.save()
+        
+        // Now delete the food
+        modelContext.delete(food)
+        try? modelContext.save()
+        
+        dismiss()
     }
     
     private func isDisabled() -> Bool {

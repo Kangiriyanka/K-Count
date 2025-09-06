@@ -71,8 +71,6 @@ struct LogView: View {
     
     // Creates a day 
     private func addDay(_ newDate: Date ) {
-        
-        
         guard let normalizedDate = normalizedDate(from: newDate) else {
             print("Error: Unable to normalize date from \(newDate)")
             return
@@ -97,15 +95,18 @@ struct LogView: View {
     init() {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year, .month, .day], from: Date())
-        // A date by default stores time. This removes the time component of the Date.
-        guard let normalizedDate = calendar.date(from: components) else {
-            fatalError("Unable to create normalized date from current date")
+        
+        do {
+            guard let normalizedDate = calendar.date(from: components) else {
+                throw DateError.invalidRange
+            }
+            self.selectedDate = normalizedDate
+        } catch {
+            print("Error creating normalized date:", error.localizedDescription)
+            self.selectedDate = Date()
         }
-        self.selectedDate = normalizedDate
+        
         self.calendar = calendar
-      
-        
-        
     }
     
     

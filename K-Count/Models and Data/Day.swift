@@ -10,7 +10,7 @@ import SwiftData
 
 
 @Model
-class Day: Codable {
+final class Day: Codable {
     @Attribute(.unique) var date : Date
     var weight: Double
     var formattedDate: String {
@@ -46,7 +46,7 @@ class Day: Codable {
         
         foodEntries.forEach { entry in
             
-            guard let food = entry.food else { return }
+            let food = entry.food
             let foodData = "(\(food.name)  \(food.calories) x \(entry.servingSize) =   \(food.calories * entry.servingSize)) "
             result += foodData
             
@@ -61,7 +61,7 @@ class Day: Codable {
         var total: Double = 0
         foodEntries.forEach { entry in
             
-            guard let food =  entry.food else {return}
+            let food = entry.food
             total += food.calories * entry.servingSize
             
         }

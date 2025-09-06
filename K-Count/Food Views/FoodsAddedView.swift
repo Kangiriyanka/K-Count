@@ -22,37 +22,33 @@ struct FoodsAddedView: View {
                         .padding(.vertical, 40)
                 } else {
                     ForEach($foodsAdded, id: \.self) { $entry in
-                        if let food = entry.food {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(food.name)
-                                        .font(.headline)
-                                    Text(getServingSize(entry: entry))
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                                
-                                Spacer()
-                                
-                                Text("\(Int(food.calories * entry.servingSize)) kcal")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(.primary)
+                        let food = entry.food
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(food.name)
+                                    .font(.headline)
+                                Text(getServingSize(entry: entry))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                             }
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(.accent.opacity(0.05))
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(.accent, lineWidth: 0.5)
-                            )
-                        } else {
-                            Text("Invalid food entry")
-                                .foregroundStyle(.red)
-                                .padding()
+                            
+                            Spacer()
+                            
+                            Text("\(Int(food.calories * entry.servingSize)) kcal")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.primary)
                         }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.accent.opacity(0.05))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(.accent, lineWidth: 0.5)
+                        )
+                        
                     }
                 }
             }
@@ -61,7 +57,7 @@ struct FoodsAddedView: View {
     }
     
     func getServingSize(entry: FoodEntry) -> String {
-        guard let food = entry.food else { return "Unknown serving" }
+        let food = entry.food
         let servingType = ServingType(rawValue: food.servingType) ?? .gram
         return entry.servingSize > 1 ?
             String(format: "%0.1f ", entry.servingSize) + servingType.pluralForm :
