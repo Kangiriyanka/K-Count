@@ -41,11 +41,13 @@ enum HeightValue: Equatable, Hashable{
         }
     }
     
+   
+    
     var asFeetInches: FootInches {
         switch self {
         case .imperial(let fi): return fi
         case .metric(let value):
-            let totalInches = value / 2.54
+            let totalInches = (value / 2.54).rounded()
             let f = Int(totalInches) / 12
             let i = Int(totalInches) % 12
             return FootInches(foot: f, inches: i)

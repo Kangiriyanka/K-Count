@@ -211,7 +211,9 @@ struct OnboardingView: View {
                             userSettings.activityLevel = activityLevel
                             userSettings.heightPreference = heightPreference
                             userSettings.weightPreference = weightPreference
-                            hasOnboarded = true
+                            withAnimation {
+                                hasOnboarded = true
+                            }
                         }
                         
                         
@@ -221,9 +223,9 @@ struct OnboardingView: View {
                     .listRowBackground(EmptyView())
                     .buttonStyle(OnboardingButton())
                     .disabled(
-                        !hasPickedHeight ||
-                        !hasPickedWeight ||
-                        name.trimmingCharacters(in: .whitespacesAndNewlines).count < 2
+                        
+                        isDisabled()
+                        
                     )
                 }
             

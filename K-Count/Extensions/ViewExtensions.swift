@@ -104,6 +104,7 @@ struct LeftBorder: Shape {
 
 // MARK: - View Extensions
 
+
 extension View {
     func endTextEditing() {
         UIApplication.shared.sendAction(
@@ -141,6 +142,18 @@ extension View {
            }
        }
     
+    /// Restricts user input in a bound `TextField` to numeric values with limited digits.
+    /// - Parameters:
+    ///   - number: The bound `String` value from a `TextField`.
+    ///   - decimalLimit: The maximum number of digits allowed after the decimal point.
+    ///   - prefix: The maximum number of digits allowed before the decimal point.
+    /// - Returns: A modified `View` that enforces these input restrictions.
+    ///
+    /// This modifier:
+    /// 1. Prevents multiple decimals (`..` becomes `.`).
+    /// 2. Strips leading zeros and dots to avoid invalid numbers.
+    /// 3. Removes all non-numeric characters except the decimal point.
+    /// 4. Enforces maximum digits before and after the decimal point.
     func limitDecimals(_ number: Binding<String>, decimalLimit: Int, prefix: Int) -> some View {
         self
             .onChange(of: number.wrappedValue) {
@@ -148,12 +161,12 @@ extension View {
                 
                 let cleanedInput = number.wrappedValue
                     .replacingOccurrences(of:  "\\.{2,}", with: ".", options: .regularExpression)
-                    .replacingOccurrences(of: "^0|^\\.", with: "", options: .regularExpression)
+                    .replacingOccurrences(of: "^(0)(?!\\.)", with: "", options: .regularExpression)
                     .replacingOccurrences(of: "[^0-9.]", with: "", options: .regularExpression)
                 
                 number.wrappedValue = cleanedInput
                 let components = cleanedInput.components(separatedBy: ".")
-                // No decimal
+               
                 if components.count == 1 {
                     number.wrappedValue = String(number.wrappedValue.prefix(prefix))
                 }

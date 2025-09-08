@@ -154,7 +154,7 @@ struct ChartView: View {
                         
                         
                     }
-                    .frame(height: 350)
+                    .frame(height: 275)
                 
                    
                 }
@@ -234,8 +234,8 @@ struct ChartView: View {
 #Preview {
    let testDays = [
        Day(date: Calendar.current.date(byAdding: .day, value: -10, to: Date())!, weight: 70.0, foodEntries: []), // 60 days ago
-       Day(date: Calendar.current.date(byAdding: .day, value: -5, to: Date())!, weight: 68.5, foodEntries: []), // 5 days ago
-       Day(date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, weight: 68.0, foodEntries: []), // 2 days ago
+       Day(date: Calendar.current.date(byAdding: .day, value: -20, to: Date())!, weight: 68.5, foodEntries: []), // 5 days ago
+       Day(date: Calendar.current.date(byAdding: .day, value: -30, to: Date())!, weight: 68.0, foodEntries: []), // 2 days ago
        Day(date: Date(), weight: 67.5, foodEntries: []) // Today
    ]
    ChartView(days: testDays)

@@ -40,6 +40,7 @@ struct KCountTests {
         for entry in food.entries {
             modelContext.delete(entry)
         }
+        try modelContext.save()
         modelContext.delete(food)
         try modelContext.save()
         

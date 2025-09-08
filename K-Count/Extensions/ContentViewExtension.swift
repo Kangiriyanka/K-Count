@@ -11,7 +11,7 @@ import SwiftUI
 
 extension ContentView {
     
-        func CustomTabItem(imageName: String, title: String, isActive: Bool) -> some View{
+        func CustomTabItem(imageName: String, title: String, isActive: Bool) -> some View {
             HStack(spacing: 5){
                 Spacer()
                 Image(systemName: imageName)

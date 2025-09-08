@@ -57,7 +57,7 @@ struct AddFoodView: View {
     @State private var selectedMode: Modes = .search
     @State private var showingPopover: Bool = false
     @State private var isClicked = false
-
+    
     var filteredFoods: [Food] {
         let filtered = if searchText.isEmpty {
             foods
@@ -67,17 +67,17 @@ struct AddFoodView: View {
         
         return filtered.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
     }
-
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-         
+                
                 CustomPicker(selectedMode: $selectedMode)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 8).fill(Color(.secondarySystemGroupedBackground)))
                     .shadow(radius: 2, x: 0, y: 0.2)
-
-             
+                
+                
                 Group {
                     if selectedMode == .addNew {
                         NewFoodView(foodsAdded: $foodsAdded)
@@ -88,9 +88,9 @@ struct AddFoodView: View {
                             .transition(.move(edge: .leading).combined(with: .opacity))
                     }
                 }
-            
+                
                 .animation(.easeInOut(duration: 0.25), value: selectedMode)
-
+                
                 Spacer()
             }
             .padding(.horizontal)
@@ -106,9 +106,9 @@ struct AddFoodView: View {
             }
         }
     }
-
-
-
+    
+    
+    
     private var foodListSection: some View {
         Group {
             if filteredFoods.isEmpty {
@@ -120,28 +120,28 @@ struct AddFoodView: View {
             } else {
                 List {
                     Section("Available Foods") {
-                    ForEach(filteredFoods, id: \.id) { food in
-                        NavigationLink(destination: FoodView(food: food, foodsAdded: $foodsAdded)) {
-                            VStack(alignment: .leading) {
-                                Text(food.name)
-                                HStack {
-                                    (Text(food.calories.formatted() + " cal")
-                                     + Text(" / \(food.servingType)"))
-                                    .foregroundStyle(.secondary)
+                        ForEach(filteredFoods, id: \.id) { food in
+                            NavigationLink(destination: FoodView(food: food, foodsAdded: $foodsAdded)) {
+                                VStack(alignment: .leading) {
+                                    Text(food.name)
+                                    HStack {
+                                        (Text(food.calories.formatted() + " cal")
+                                         + Text(" / \(food.servingType)"))
+                                        .foregroundStyle(.secondary)
+                                    }
                                 }
                             }
+                            
                         }
-                       
                     }
-                  }
                 }
-               
+                
                 .scrollContentBackground(.hidden)
-               
+                
             }
         }
     }
-
+    
     private var basketButton: some View {
         Button {
             showingPopover = true
@@ -167,38 +167,34 @@ struct AddFoodView: View {
                 .presentationCompactAdaptation(.popover)
         }
     }
-
+    
     private var actionButtons: some View {
         HStack {
             Button("Cancel", role: .cancel) {
                 dismiss()
             }
             .foregroundColor(.red)
-
+            
             Button("Done") {
-                updateFoodEntries()
+                updateDayFoodEntries()
                 dismiss()
             }
         }
     }
-    // If our day doesn't contain the food entry, add it
-    // Otherwise, update the portions
-    // You have to explicitly define the relationship from FoodEntry to Day
-    
-    private func updateFoodEntries() {
-        
-        
+    /// Synchronizes `foodsAdded` with the `day.foodEntries`.
+    /// - If the day does not already contain a `FoodEntry` for a given food, the entry is
+    ///   added and its relationship to `day` is explicitly set.
+    /// - If the food already exists in the day's entries, its serving size is updated
+    ///   to match the new value.
+    private func updateDayFoodEntries() {
         for entry in foodsAdded {
-            if !day.foodEntries.contains(where: {$0.food == entry.food}) {
-                //*** Here
+            if !day.foodEntries.contains(where: { $0.food == entry.food }) {
+                // Establish the relationship between the entry and the day
                 entry.day = day
                 day.foodEntries.append(entry)
+            } else {
+                day.foodEntries.first(where: { $0.food == entry.food })?.servingSize = entry.servingSize
             }
-            else {
-                
-                day.foodEntries.first(where: {$0.food == entry.food})?.servingSize = entry.servingSize
-            }
-            
         }
     }
 }

@@ -13,15 +13,6 @@ struct ContentView: View {
    
    var body: some View {
        
-//#if targetEnvironment(simulator)
-//SwiftDataDebugView()
-//  .tabItem {
-//      Image(systemName: "ladybug")
-//      Text("Debug")
-//  }
-//  .tag(3)
-//#endif
-       
        ZStack(alignment: .bottom) {
            TabView(selection: $selectedTab) {
                LogView().tag(0)
@@ -31,12 +22,11 @@ struct ContentView: View {
                
            }
           
-
-               
-      
-         
            
-           // Custom Tab Bar
+           /// Custom Tab Bar
+           /// TabbedItems are day, analytics, export
+           /// The CustomTabItem is an Image with 2 Spacers
+           
            HStack {
                ForEach(TabbedItems.allCases, id: \.self) { item in
                    Button {

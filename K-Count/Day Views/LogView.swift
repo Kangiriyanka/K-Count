@@ -57,10 +57,10 @@ struct LogView: View {
     }
     
     
-    // Find the matching day based on the selected date
-    // If there is no matching day, the addDay function will create a day and add it to the Day model
+    /// Finds a matching `Day` for the current `selectedDate`.
+    /// - If a `Day` with the same date exists in `days`, it sets `matchingDay` to that instance.
+    /// - If no match exists, it calls `addDay(_:)` to create and add a new `Day` for the `selectedDate`.
     private func findMatchingDay() {
-        
         if let match = days.first(where: { $0.date == selectedDate }) {
             matchingDay = match
         } else {
@@ -69,10 +69,12 @@ struct LogView: View {
     }
     
     
-    // Creates a day 
+    /// Creates and inserts a new `Day` object for the given date.
+        ///
+        /// - Parameter newDate: The date to create a `Day` for.
+        /// - Note: If a `Day` with the same normalized date already exists, no new day will be added.
     private func addDay(_ newDate: Date ) {
         guard let normalizedDate = normalizedDate(from: newDate) else {
-            print("Error: Unable to normalize date from \(newDate)")
             return
         }
         
@@ -91,7 +93,6 @@ struct LogView: View {
     }
     
     // Initialize the calendar to be set to today's date
-    // The normalized date only contains the year, month and day. The time is excluded.
     init() {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year, .month, .day], from: Date())

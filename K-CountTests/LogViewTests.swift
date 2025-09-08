@@ -32,10 +32,7 @@ struct LogViewTests {
         #expect(days.first?.weight == 70.0)
     }
 
-    @MainActor
-    @Test func testLogViewCreation() {
-        let _ = LogView()
-        // Just test it compiles and initializes
-        #expect(true)
-    }
+   
+    
+  
 }

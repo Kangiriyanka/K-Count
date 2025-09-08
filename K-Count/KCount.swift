@@ -12,12 +12,18 @@ import SwiftData
 struct RootView: View {
     @AppStorage("hasOnboarded") var hasOnboarded: Bool = false
     
+    
     var body: some View {
-        if hasOnboarded {
-            ContentView()
-        } else {
-            OnboardingView()
+        ZStack {
+            if hasOnboarded {
+                ContentView()
+                  
+            } else {
+                OnboardingView()
+                    .transition(.move(edge: .leading).combined(with: .opacity))
+            }
         }
+        .animation(.easeInOut(duration: 0.5), value: hasOnboarded)
     }
 }
 
@@ -37,6 +43,8 @@ struct KCountApp: App {
 }
 
 #Preview("Not Onboarded") {
-    OnboardingView()
-        .modelContainer(for: Day.self, inMemory: true)
+    
+    RootView(hasOnboarded: false)
+    
 }
+
