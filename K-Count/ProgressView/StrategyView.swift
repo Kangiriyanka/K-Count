@@ -115,8 +115,9 @@ struct StrategyView: View {
                     .font(.body)
             }
         }
-        .padding(.bottom, 5)
+      
         .smallDataCardStyle()
+        .padding()
        
      
         

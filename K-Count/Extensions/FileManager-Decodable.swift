@@ -54,7 +54,6 @@ extension FileManager {
         
         do {
             try csvString.write(to: fileURL, atomically: true, encoding: .utf8)
-            print("CSV filed saved to: \(fileURL)")
             return fileURL
         }
         catch {

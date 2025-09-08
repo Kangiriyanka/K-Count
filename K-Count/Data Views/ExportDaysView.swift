@@ -121,8 +121,7 @@ struct ExportDaysView: View {
          
              
      case .json:
-         // Filter days with weight > 0
-         
+       
          
          do {
              let url = try fileManager.saveJSONFile(object: exportDays, file: "days.json")

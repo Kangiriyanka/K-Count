@@ -29,17 +29,48 @@ struct RootView: View {
 
 @main
 struct KCountApp: App {
+    #if DEBUG
+    let container = try! ModelContainer(for: Day.self, Food.self, FoodEntry.self)
+    #endif
     var body: some Scene {
+        
         WindowGroup {
             RootView()
+                .onAppear {
+                                  #if DEBUG
+                                  generateSampleDays()
+                                  #endif
+                              }
         }
-        .modelContainer(for: Day.self)
+        .modelContainer(for: [Day.self, Food.self, FoodEntry.self])
     }
+    
+    #if DEBUG
+    private func generateSampleDays() {
+            let context = ModelContext(container)
+            
+            // Check if days already exist
+            let descriptor = FetchDescriptor<Day>()
+            let existingDays = (try? context.fetch(descriptor)) ?? []
+            
+            guard existingDays.isEmpty else { return }
+            
+            let days = Day.generateExamples(count: 365)
+            for day in days {
+                context.insert(day)  // Use insert, not add
+            }
+            
+            try? context.save()
+            print("Generated 365 sample days")
+        }
+    #endif
+    
 }
 
 #Preview("Onboarded") {
     RootView()
-        .modelContainer(for: Day.self, inMemory: true)
+        .modelContainer(for: [Day.self, Food.self, FoodEntry.self], inMemory: true)
+    
 }
 
 #Preview("Not Onboarded") {

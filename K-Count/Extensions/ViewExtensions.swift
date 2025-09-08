@@ -80,17 +80,16 @@ struct SmallDataCard: ViewModifier {
             .padding(.horizontal, normalPadding)
             .padding(.vertical, normalPadding)
             .background(
-                (Color(.secondarySystemGroupedBackground)),
-                in: RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(.secondarySystemGroupedBackground))
             )
-            .shadow(color: .black.opacity(0.06), radius: 2)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(Color(.separator), lineWidth: 1)
             )
+            .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 2)
     }
 }
-
 // MARK: - Custom Shapes
 
 struct LeftBorder: Shape {

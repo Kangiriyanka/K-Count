@@ -121,7 +121,6 @@ struct AllFoodsView: View {
                     
                     
                     
-                    
                     Menu {
                         Menu {
                             ForEach([SortOption.nameDescending, SortOption.nameAscending], id: \.self) { option in
@@ -170,17 +169,20 @@ struct AllFoodsView: View {
                     } label: {
                         Image(systemName: "arrow.up.arrow.down")
                     }
+                
                     
-                    HStack {
-                        Button {
-                            isExporting.toggle()
-                        } label: {
-                            Label("", systemImage: "square.and.arrow.up")
-                                .labelStyle(.iconOnly)
-                        }
+                  
+             
+                    Button {
+                        isExporting.toggle()
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                           
+                    }
+                        
                    
   
-                    }
+                    
                 }
                 
             }

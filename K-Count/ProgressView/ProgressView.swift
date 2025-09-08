@@ -27,7 +27,7 @@ struct ProgressView: View {
     var body: some View {
         NavigationStack {
             ScrollViewReader { proxy in
-                ScrollView {
+                ScrollView(showsIndicators: false){
                     
                     VStack(alignment: .center) {
                         ChartView(days: days)
@@ -130,28 +130,34 @@ struct ProgressView: View {
                                 StrategyView(current: currentWeight, goal: goalWeight, difference: toGoal)
                                     .transition(.scale)
                                     .id("StrategyViewID")
-                                    .onAppear {
-                                              DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                  withAnimation(.easeInOut(duration: 0.5)) {
-                                                      proxy.scrollTo("StrategyViewID", anchor: .top)
-                                                  }
-                                              }
-                                          }
+                                   
+                                  
                                 
                                 
                          
                             }
                             
+                            
                          
                         }
                     }
-                    .padding()
+                    .onChange(of: showStrategyView) { _,_ in
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                withAnimation {
+                                    proxy.scrollTo("StrategyViewID", anchor: .top)
+                                }
+                            }
+                        }
+                    }
+                 
                     .navigationBarTitle("My Progress", displayMode: .inline)
+                 
                 }
+            
             }
         }
     }
-}
+
 
 #Preview {
     ProgressView()

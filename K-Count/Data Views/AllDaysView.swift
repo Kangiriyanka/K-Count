@@ -193,16 +193,13 @@ struct AllDaysView: View {
                                 
                            }
                     
-                    HStack {
-                        Button {
-                            isExporting.toggle()
-                        } label: {
-                            Label("", systemImage: "square.and.arrow.up")
-                                .labelStyle(.iconOnly)
-                        }
-                   
-  
+                    Button {
+                        isExporting.toggle()
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                           
                     }
+                        
                     }
                 
             }

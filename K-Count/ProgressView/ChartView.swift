@@ -22,6 +22,8 @@ private enum Period: String, CaseIterable {
     }
 }
 
+
+
 struct PeriodPicker: View {
     @Binding fileprivate var selectedPeriod: Period
     @Namespace private var namespace
@@ -53,16 +55,46 @@ struct ChartView: View {
     @AppStorage("userSettings") var userSettings = UserSettings()
     var days: [Day]
     @State private var selectedPeriod: Period = .week
+    @State private var selectedDates: [Date] = []
+    
+    private func getFormatter() -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = selectedPeriod == .year ? "MMM" : "MM/dd"
+        return formatter
+    }
    
    
     
-   
+
+    
     private var filteredDays: [Day] {
-        let cutoffDate = Calendar.current.date(byAdding: .day, value: -selectedPeriod.days, to: Date()) ?? Date()
+           let cutoffDate = Calendar.current.date(byAdding: .day, value: -selectedPeriod.days, to: Date()) ?? Date()
+           let filtered = days.filter { $0.date >= cutoffDate && $0.weight != 0.0 }
+
+           switch selectedPeriod {
+           case .week, .month:
+               return filtered.sorted { $0.date < $1.date }
+           case .year:
+               return averageWeightPerMonth(from: filtered)
+           }
+       }
+
+
+    private func averageWeightPerMonth(from days: [Day]) -> [Day] {
+        let calendar = Calendar.current
         
-        return days
-            .filter { $0.date >= cutoffDate && $0.weight != 0.0 }
-            .sorted { $0.date < $1.date }
+        // Group days by first day of month
+        let grouped = Dictionary(grouping: days) { day in
+            calendar.date(from: calendar.dateComponents([.year, .month], from: day.date))!
+        }
+
+        // Compute average weight per month
+        return grouped.map { (monthDate, daysInMonth) in
+            let total = daysInMonth.reduce(0.0) { $0 + $1.weight }
+            let average = total / Double(daysInMonth.count)
+            return Day(date: monthDate, weight: average, foodEntries: [])
+        }
+        .sorted { $0.date < $1.date }
     }
 
     private var customWeightRange: ClosedRange<Double> {
@@ -76,17 +108,19 @@ struct ChartView: View {
         return (min - padding)...(max + padding)
     }
     
+    private var annotationStep:  Int {
+        switch selectedPeriod {
+        case .week, .year: return 1
+        case .month: return 2
+       
+        }
+    }
+    
    
 
 
  
-    private func annotationStep(for period: Period) -> Int {
-        switch selectedPeriod {
-        case .week: return 1
-        case .month: return 5
-        case .year: return 30
-        }
-    }
+   
     
    
     
@@ -102,7 +136,7 @@ struct ChartView: View {
     
     var body: some View {
         
-        PeriodPicker(selectedPeriod: $selectedPeriod)
+        PeriodPicker(selectedPeriod: $selectedPeriod).padding()
         
         if filteredDays.isEmpty {
             ZStack {
@@ -118,50 +152,63 @@ struct ChartView: View {
                 }
             }
         }
-            VStack {
-                    Chart(Array(filteredDays.enumerated()), id: \.offset) { index,day in
-                        
-                        AreaMark(x: .value("Date", day.date),
-                                 yStart: .value("Baseline", customWeightRange.lowerBound),
-                                 yEnd: .value("Weight", day.weight))
-                        .foregroundStyle(linearGradient)
-                        .interpolationMethod(.catmullRom)
-                        .foregroundStyle(linearGradient)
-                        .interpolationMethod(.catmullRom)
-                        
-                        LineMark(x: .value("Date", day.date),
-                                 y: .value("Weight", day.weight))
-                        .interpolationMethod(.catmullRom)
-                        
-                        
-                       
-                        if (index % annotationStep(for: selectedPeriod)) == 0 {
-                            PointMark(
-                                x: .value("Date", day.date),
-                                y: .value("Weight", day.weight)
-                            )
-                            
-                            .annotation(position: .top, spacing: 20) {
-                                let weightValue = WeightValue.metric(day.weight)
-                                Text(weightValue.graphDisplay(for: userSettings.weightPreference))
-                                    .font(.caption2)
-                                    .padding(2)
-                            }
-                        }
-                        
-                       
-                        
-                        
-                        
+        // Overhead comes from having 365 LineMarks + 365 AreaMarks
+        VStack {
+            
+            
+            Chart(filteredDays.indices, id: \.self) { index in
+                
+                let day = filteredDays[index]
+                
+                
+                
+                    AreaMark(x: .value("Date", day.date),
+                             yStart: .value("Baseline", customWeightRange.lowerBound),
+                             yEnd: .value("Weight", day.weight))
+                    .interpolationMethod(.catmullRom)
+                    .foregroundStyle(linearGradient)
+                    .interpolationMethod(.catmullRom)
+                
+                
+                    
+            
+                
+                
+                LineMark(x: .value("Date", day.date),
+                         y: .value("Weight", day.weight))
+                .interpolationMethod(.catmullRom)
+                
+                
+   
+                if (index % annotationStep) == 0 {
+                    PointMark(
+                        x: .value("Date", day.date),
+                        y: .value("Weight", day.weight)
+                    )
+                    .annotation(position: .top, spacing: 10) {
+                        let weightValue = WeightValue.metric(day.weight)
+                        Text(weightValue.graphDisplay(for: userSettings.weightPreference))
+                            .font(.caption2)
+                            .padding(2)
                     }
-                    .frame(height: 275)
+                    
+                  
+                }
+                    
+                    
+                    
+                    
+                    
+            }
+        
+            .frame(height: 275)
                 
                    
                 }
                 
-                .padding()
+                .padding(15)
                 .chartXAxis {
-                    chartXAxis(filteredDays: filteredDays, transformDate: transformDate)
+                    chartXAxis(filteredDays: filteredDays)
                 }
                 .chartYAxis {
                     chartYAxis(range: customWeightRange)
@@ -169,6 +216,7 @@ struct ChartView: View {
         
                
                 .chartYScale(domain: customWeightRange)
+             
                 .chartPlotStyle { plotArea in
                     plotArea
                         .background(.mint.opacity(0.03))
@@ -177,28 +225,28 @@ struct ChartView: View {
                                             
                 }
                 
-            .chartScrollableAxes(.horizontal)
+            .chartScrollableAxes(selectedPeriod == .week ? [] : .horizontal)
             .background(Color(.secondarySystemGroupedBackground))
   
            
         
     }
     
-    private func chartXAxis(filteredDays: [Day], transformDate: @escaping (Date) -> String) -> some AxisContent {
+    private func chartXAxis(filteredDays: [Day]) -> some AxisContent {
         let selectedDates = filteredDays.enumerated().compactMap { index, day in
-                index % annotationStep(for: selectedPeriod) == 0 ? day.date : nil
+                index % annotationStep == 0 ? day.date : nil
             }
         
         return AxisMarks(preset: .aligned, values: selectedDates) { value in
             AxisValueLabel {
                 if let label = value.as(Date.self) {
-                    Text(transformDate(label))
+                    Text(getFormatter().string(from: label))
                         .font(.caption2)
                         .padding([.top, .leading], 10)
                 }
             }
-            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
-                .foregroundStyle(.gray)
+            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.2, dash: [2, 2]))
+               .foregroundStyle(.gray)
         }
     }
     
@@ -216,14 +264,7 @@ struct ChartView: View {
         }
     }
     
-    
-    private func transformDate (_ date: Date) -> String {
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MM/dd"
-        return formatter.string(from: date)
-        
-    }
+ 
 }
 
 #Preview {
@@ -233,10 +274,10 @@ struct ChartView: View {
 
 #Preview {
    let testDays = [
-       Day(date: Calendar.current.date(byAdding: .day, value: -10, to: Date())!, weight: 70.0, foodEntries: []), // 60 days ago
-       Day(date: Calendar.current.date(byAdding: .day, value: -20, to: Date())!, weight: 68.5, foodEntries: []), // 5 days ago
-       Day(date: Calendar.current.date(byAdding: .day, value: -30, to: Date())!, weight: 68.0, foodEntries: []), // 2 days ago
-       Day(date: Date(), weight: 67.5, foodEntries: []) // Today
+       Day(date: Calendar.current.date(byAdding: .day, value: -10, to: Date())!, weight: 70.0, foodEntries: []),
+       Day(date: Calendar.current.date(byAdding: .day, value: -20, to: Date())!, weight: 68.5, foodEntries: []),
+       Day(date: Calendar.current.date(byAdding: .day, value: -30, to: Date())!, weight: 68.0, foodEntries: []),
+       Day(date: Date(), weight: 67.5, foodEntries: [])
    ]
    ChartView(days: testDays)
 }

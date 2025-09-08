@@ -100,20 +100,13 @@ final class Day: Codable {
         var weight: Double = 70.0
 
         for i in 0..<count {
-            // Going backwards in time
             let date = baseDate.addingTimeInterval(-86400 * Double(i))
-
-           
             weight -= Double.random(in: -0.3...0.3)
 
-            // Random food entries
-            let entries = [
-                FoodEntry(food: Food.exampleFruit, servingSize: Double(Int.random(in: 1...3))),
-                FoodEntry(food: Food.exampleVegetable, servingSize: Double(Int.random(in: 1...3)))
-            ]
+         
 
             days.append(
-                Day(date: date, weight: weight, foodEntries: entries)
+                Day(date: date, weight: weight, foodEntries: [])
             )
         }
 
