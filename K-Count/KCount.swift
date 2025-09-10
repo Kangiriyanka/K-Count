@@ -61,7 +61,7 @@ struct KCountApp: App {
             }
             
             try? context.save()
-            print("Generated 365 sample days")
+   
         }
     #endif
     

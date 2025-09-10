@@ -12,21 +12,25 @@ struct ImperialTickView: View {
                 .fill(isSelected ? .accent : .primary)
                 .frame(width: 1, height: isMajor ? 40 : 30)
             
+            
             if isMajor {
                 Text("\(value.foot)'")
                     .font(.caption2)
                     .foregroundColor(isSelected ? .accent : .primary)
             }
         }
+        
+        
         .frame(width: 30)
     }
 }
 
 struct ImperialRulerPicker: View {
     @Binding var selectedValue: HeightValue
+    // You need this to be optional, because we want the proxy to take us to a default value when the first appears.
     @State private var scrollPosition: Double?
     
-   
+    /// Returns an array FootInches that belong to the HeightValue enum:  [ FootInches(foot: 2, inches: 0),  ... , FootInches(foot:7, inches: 11)]
     private let ticks: [HeightValue.FootInches] = (2...7).flatMap { foot in
         (0...11).map { inch in
             HeightValue.FootInches(foot: foot, inches: inch)
@@ -48,13 +52,14 @@ struct ImperialRulerPicker: View {
                     .position(x: centerX )
                 ScrollViewReader { proxy in
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 0) {
+                        LazyHStack(spacing: 0) {
                             ForEach(ticks, id: \.self) { tick in
                                 ImperialTickView(
                                     value: tick,
                                     isMajor: tick.inches == 0,
                                     isSelected: tick == selectedValue.asFeetInches
                                 )
+                            
                                 .id(tick)
                                 
                    
@@ -65,6 +70,8 @@ struct ImperialRulerPicker: View {
                     
                     .scrollTargetLayout()
                     .contentMargins(.horizontal, centerX - 15)
+                    
+                    // The id has to be a Binding of the Ticks's Value, here it's Binding<HeightValue.FootInches>
                     .scrollPosition(id: .init(
                         get: { selectedValue.asFeetInches},
                         set: { newValue in

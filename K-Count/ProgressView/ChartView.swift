@@ -55,7 +55,7 @@ struct ChartView: View {
     @AppStorage("userSettings") var userSettings = UserSettings()
     var days: [Day]
     @State private var selectedPeriod: Period = .week
-    @State private var selectedDates: [Date] = []
+  
     
     private func getFormatter() -> DateFormatter {
         let formatter = DateFormatter()
@@ -64,7 +64,6 @@ struct ChartView: View {
     }
    
    
-    
 
     
     private var filteredDays: [Day] {
@@ -83,16 +82,17 @@ struct ChartView: View {
     private func averageWeightPerMonth(from days: [Day]) -> [Day] {
         let calendar = Calendar.current
         
-        // Group days by first day of month
-        let grouped = Dictionary(grouping: days) { day in
+        // Creates something like [ 2025-01-01: [day A,day B,day C],  2025-02-01: [day X, day Y, day Z]]
+        let groupedMonths = Dictionary(grouping: days) { day in
             calendar.date(from: calendar.dateComponents([.year, .month], from: day.date))!
         }
-
+        
         // Compute average weight per month
-        return grouped.map { (monthDate, daysInMonth) in
-            let total = daysInMonth.reduce(0.0) { $0 + $1.weight }
-            let average = total / Double(daysInMonth.count)
-            return Day(date: monthDate, weight: average, foodEntries: [])
+        return groupedMonths.map { (monthDate, daysInMonth) in
+            
+            let total = daysInMonth.reduce(0) { $0 + $1.weight }
+            let avg = total / Double(daysInMonth.count)
+            return Day(date: monthDate, weight: avg, foodEntries: [])
         }
         .sorted { $0.date < $1.date }
     }
@@ -237,7 +237,7 @@ struct ChartView: View {
                 index % annotationStep == 0 ? day.date : nil
             }
         
-        return AxisMarks(preset: .aligned, values: selectedDates) { value in
+        return AxisMarks( values: selectedDates) { value in
             AxisValueLabel {
                 if let label = value.as(Date.self) {
                     Text(getFormatter().string(from: label))

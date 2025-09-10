@@ -40,26 +40,29 @@ struct MetricRulerPicker: View {
             Rectangle()
                 .fill(.accent)
                 .frame(width: 4, height: 25)
-                .position(x: centerX, )
+                .position(x: centerX )
             
             ScrollViewReader { proxy in
 
                 
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 0) {
+                    LazyHStack(spacing: 0) {
                         ForEach(ticks, id: \.self) { tick in
                             TickView(
                                 value: tick,
                                 isMajor: tick.truncatingRemainder(dividingBy: 5) == 0,
                                 isSelected: tick == selectedValue.asCentimeters
                             )
+                            .id(tick)
                           
                        
                         }
                     }
                     .scrollTargetLayout()
                 }
-                .contentMargins(.horizontal, (centerX - 15))
+                
+            
+               
                 .scrollTargetBehavior(.viewAligned)
                 .scrollPosition(id: .init(
                     get: { selectedValue.asCentimeters},

@@ -8,7 +8,7 @@
 import Foundation
 
 
-// ---- Enums for Height/Weight Conversions  ---- //
+// Enums for Height/Weight Conversions 
 // For the Picker
 enum MeasurementSystem: String, Codable, CaseIterable {
     case metric = "Metric"

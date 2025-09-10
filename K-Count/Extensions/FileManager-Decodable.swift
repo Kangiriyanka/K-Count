@@ -63,12 +63,12 @@ extension FileManager {
     }
     
     
-    func saveJSONFile<T: Encodable>(object: T, file: String) throws -> URL {
+    func saveJSONFile<T: Encodable>(object: T, filename: String) throws -> URL {
         guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             throw FileSaveError.noDocumentsDirectory
         }
         
-        let fileURL = documentsURL.appendingPathComponent(file)
+        let fileURL = documentsURL.appendingPathComponent(filename)
         
         do {
             let formatter = DateFormatter()

@@ -15,9 +15,7 @@ enum Strategy: String, CaseIterable {
     // Standard strategy: lose 0.5lbs for 7 days.
     var kilogramsPerWeek: Double {
         
-        
         switch self {
-            
         case .steady:
             
             return 0.03239942857
@@ -46,16 +44,11 @@ enum Strategy: String, CaseIterable {
                     : "Consume about 500 extra calories per day"
             case .hardcore:
                 return isLosing
-                    ? "Consume about 750 fewer calories per day"
-                    : "Consume about 750 extra calories per day"
+                    ? "Consume about 750 fewer calories per day (not recommended)"
+                    : "Consume about 750 extra calories per day (not recommended)"
             }
         }
-    
-    
-    
-    
-    
-    
+
 }
 struct StrategyView: View {
     
@@ -137,7 +130,6 @@ struct StrategyView: View {
     private func calculateDays(difference: WeightValue, strategy: Strategy) -> Double {
         
         let kilos: Double = strategy.kilogramsPerWeek
-        
         return (difference.asKilograms / kilos).rounded(.down)
         
 

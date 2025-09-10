@@ -7,10 +7,11 @@
 
 import SwiftUI
 
+/// Copy the struct from @AppStorage to a new @State variable. This way, changes in the UI don’t immediately overwrite the stored value. If you were to bind fields directly to the @AppStorage property, every edit would be saved right away.
 struct ProfileView: View {
     
     @AppStorage("userSettings") var userSettings = UserSettings()
-
+    
     @State private var editableSettings = UserSettings()
     @State private var errorTitle = ""
     @State private var errorMessage = ""

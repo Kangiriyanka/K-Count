@@ -9,6 +9,7 @@ struct KiloPicker: View {
     private let integerRange = Array(30...200)
     private let fractionRange = Array(0...9)
     
+    // You could do with with onAppear
     init(selectedValue: Binding<WeightValue>) {
         _selectedValue = selectedValue
         let kg = selectedValue.wrappedValue.asKilograms
@@ -52,6 +53,7 @@ struct KiloPicker: View {
             }
         }
     }
+    
     
     private func updateValue() {
         let newKg = Double(integerPart) + Double(fractionPart) / 10.0
