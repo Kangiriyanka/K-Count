@@ -10,7 +10,7 @@ struct ImperialTickView: View {
         VStack(spacing: 2) {
             Rectangle()
                 .fill(isSelected ? .accent : .primary)
-                .frame(width: 1, height: isMajor ? 40 : 30)
+                .frame(width: isMajor ? 2 : 1, height: isMajor ? 35 : 40)
             
             
             if isMajor {
@@ -59,7 +59,7 @@ struct ImperialRulerPicker: View {
                                     isMajor: tick.inches == 0,
                                     isSelected: tick == selectedValue.asFeetInches
                                 )
-                            
+                                
                                 .id(tick)
                                 
                    
@@ -69,7 +69,7 @@ struct ImperialRulerPicker: View {
                     }
                     
                     .scrollTargetLayout()
-                    .contentMargins(.horizontal, centerX - 15)
+                    .contentMargins(.horizontal, centerX - 15    )
                     
                     // The id has to be a Binding of the Ticks's Value, here it's Binding<HeightValue.FootInches>
                     .scrollPosition(id: .init(
@@ -81,6 +81,7 @@ struct ImperialRulerPicker: View {
                         }
                     ))
                     
+                    // Makes long scrolls a bit awkward
                     .scrollTargetBehavior(.viewAligned)
                    
                     .onAppear {

@@ -27,10 +27,6 @@ struct MetricRulerPicker: View {
     @State private var scrollPosition: Double?
     private let ticks: [Double] = Array(stride(from: 60.0, through: 240.0, by: 1.0))
     
-    private func nearestTick(to value: Double) -> Double {
-            return ticks.min(by: { abs($0 - value) < abs($1 - value) }) ?? value
-        }
-    
     var body: some View {
         
      
@@ -44,33 +40,29 @@ struct MetricRulerPicker: View {
             Rectangle()
                 .fill(.accent)
                 .frame(width: 4, height: 25)
-                .position(x: centerX )
+                .position(x: centerX, )
             
             ScrollViewReader { proxy in
 
                 
                 ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 0) {
+                    HStack(spacing: 0) {
                         ForEach(ticks, id: \.self) { tick in
                             TickView(
                                 value: tick,
                                 isMajor: tick.truncatingRemainder(dividingBy: 5) == 0,
-                                isSelected:  tick == nearestTick(to: selectedValue.asCentimeters)
+                                isSelected: tick == selectedValue.asCentimeters
                             )
-                            .id(tick)
                           
                        
                         }
                     }
                     .scrollTargetLayout()
-                    .contentMargins(.horizontal, centerX - 15)
                 }
-                
-            
-               
+                .contentMargins(.horizontal, (centerX - 15))
                 .scrollTargetBehavior(.viewAligned)
                 .scrollPosition(id: .init(
-                    get: { nearestTick(to: selectedValue.asCentimeters)},
+                    get: { selectedValue.asCentimeters},
                     set: { newValue in
                         if let newValue = newValue {
                             selectedValue = .metric(newValue)
@@ -80,8 +72,8 @@ struct MetricRulerPicker: View {
               
                 .onAppear {
                     
-                    
-                    proxy.scrollTo(nearestTick(to: selectedValue.asCentimeters), anchor: .center)
+                    let nearestTick = ticks.min(by: { abs($0 - selectedValue.asCentimeters) < abs($1 - selectedValue.asCentimeters) })!
+                    proxy.scrollTo(nearestTick, anchor: .center)
                 }
                 
               
